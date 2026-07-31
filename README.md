@@ -160,6 +160,57 @@ de tools de un CLI es suficientemente bueno, va a leer ese archivo cuando
 digas `act as data-explorer` y las instrucciones detalladas entran en
 contexto.
 
+## Cómo usarlo en tus proyectos de data analytics
+
+Una vez publicado a npm, este toolkit se usa así en cualquier proyecto de
+análisis de datos. Ejemplo end-to-end con un proyecto nuevo:
+
+```bash
+# 1. Creá tu proyecto de data analytics (cualquier directorio)
+mkdir ~/Proyectos/mi-ventas-q4
+cd ~/Proyectos/mi-ventas-q4
+git init -q -b main
+echo "data/" > .gitignore
+
+# 2. Sumá el toolkit como dev dependency
+npm init -y >/dev/null
+npm install --save-dev data-analytics-agents
+
+# 3. Registrá las 4 personas y las 8 skills en los CLIs que uses
+npx data-analytics-agents install --all
+# → crea .opencode/, .claude/, .agents/ con symlinks al toolkit
+
+# 4. (Opcional) agregá tu AGENTS.md para darle contexto a tu proyecto
+cat > AGENTS.md <<'EOF'
+# Mi proyecto de ventas Q4
+
+Datos en ./data/ventas_2024.csv. Perfil: una fila por transacción.
+Usar data-explorer para perfilado inicial, sql-analyst para queries
+si hay una DB, reporting-analyst para reportes ejecutivos.
+EOF
+
+# 5. Invocá una persona desde cualquier CLI
+opencode -m minimax-coding-plan/MiniMax-M3 --agent data-explorer "Perfilá ./data/ventas_2024.csv y dame el top 5 de productos por revenue."
+codex -m gpt-5.5 --agent reporting-analyst exec "Tendencia mensual de revenue Q4 2024, salida a ./reports/."
+```
+
+**El paso 3 es clave**: corre el installer una sola vez por proyecto. Después
+de eso, los symlinks en `.opencode/`, `.claude/`, `.agents/` apuntan a
+`./node_modules/data-analytics-agents/` y se mantienen vivos aunque npm
+limpie caches o reinstales.
+
+Si más adelante agregás una skill o una persona al toolkit (subís una nueva
+versión a npm):
+
+```bash
+cd ~/Proyectos/mi-ventas-q4
+npm update data-analytics-agents
+npx data-analytics-agents install --all   # idempotente, no-op si nada cambió
+```
+
+Los symlinks siguen apuntando al mismo lugar, las ediciones se reflejan al
+instante, no hace falta re-correr nada.
+
 ## Instalación opcional por CLI
 
 ```bash
