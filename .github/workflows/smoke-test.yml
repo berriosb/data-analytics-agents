@@ -41,6 +41,21 @@ jobs:
       - name: Uninstall --all
         run: node ./bin/install.js uninstall --all
 
+  python-smoke:
+    name: Python smoke tests (CSV + SQLite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pandas
+        run: pip install pandas
+
       - name: CSV smoke test
         run: make test-csv
 
