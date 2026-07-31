@@ -1,0 +1,5 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "data-analytics-agents",
+  "description": "Specialist data analytics agents — profile/clean CSV/Parquet/Excel, write SQL, generate Plotly charts and reports."
+}
