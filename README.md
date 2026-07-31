@@ -1,5 +1,9 @@
 # data-analytics-agents
 
+[![npm version](https://img.shields.io/npm/v/data-analytics-agents.svg)](https://www.npmjs.com/package/data-analytics-agents)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-berriosb%2Fdata--analytics--agents-blue)](https://github.com/berriosb/data-analytics-agents)
+
 Un toolkit multi-CLI de agentes y skills para trabajo de **data analytics** —
 impulsado por un único `AGENTS.md` en la raíz del proyecto, con un
 `bin/install.js` de un comando para registrar agentes project-local.
@@ -39,23 +43,58 @@ data-analytics/
 
 ## Inicio rápido
 
+### Vía npm (recomendada — agents + skills)
+
+Una vez publicado a npm:
+
 ```bash
-cd ~/Proyectos/data-analytics
-
-# Instalación project-local — registra las 4 personas como agentes reales
-# en OpenCode, Claude Code, Codex, y como plugin de Agy (global).
-make install-all          # alias: npm run install -- --all
-
-# Verificar
-opencode agent list       # debería incluir data-explorer, sql-analyst, …
-
-# Smoke test
-opencode -m minimax-coding-plan/MiniMax-M3 --agent data-explorer "decí hola"
+# Desde el directorio de cualquier proyecto de data analytics:
+npx data-analytics-agents install --all
 ```
 
-`make install-all` es **idempotente** (usa symlinks); correrlo de nuevo es un
-no-op. Después de que corrió, las ediciones a `agents/<name>.md` y
-`skills/<name>/SKILL.md` se toman en el acto por cada CLI — sin re-instalar.
+Esto registra las 4 personas y las 8 skills en OpenCode, Claude Code y
+Codex (project-local), y deja el plugin de Agy staged en
+`~/.gemini/antigravity-cli/plugins/`.
+
+### Vía skills.sh (solo skills, sin agents)
+
+```bash
+npx skills add berriosb/data-analytics-agents
+```
+
+Compatible con el formato estándar `skills/<name>/SKILL.md` de skills.sh.
+Solo instala las skills (no las personas).
+
+### Vía GitHub clone (instalación manual)
+
+```bash
+git clone https://github.com/berriosb/data-analytics-agents.git
+cd data-analytics-agents
+make install-all
+```
+
+---
+
+Una vez instalado en tu proyecto, podés invocar las personas con `--agent`:
+
+```bash
+# OpenCode
+opencode -m minimax-coding-plan/MiniMax-M3 --agent data-explorer "Perfilá examples/ventas_sample.csv y pará."
+
+# Codex
+codex -m gpt-5.5 --agent sql-analyst exec "Top 5 de clientes por revenue."
+
+# Claude Code
+claude -m opus --agent reporting-analyst "Tendencia mensual de revenue."
+
+# Antigravity
+agy -m gemini-3.6-flash --agent data-explorer "Perfilá examples/ventas_sample.csv."
+```
+
+`make install-all` (o `npx data-analytics-agents install --all`) es
+**idempotente** (usa symlinks); correrlo de nuevo es un no-op. Después de
+que corrió, las ediciones a `agents/<name>.md` y `skills/<name>/SKILL.md`
+se toman en el acto por cada CLI — sin re-instalar.
 
 ## Por qué hace falta un instalador
 

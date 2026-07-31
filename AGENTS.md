@@ -7,10 +7,19 @@ como contexto.
 
 > **Inicio rápido** — para registrar las 4 personas como agentes reales en
 > OpenCode (y como agentes/skills project-local en Claude Code, Codex y Agy),
-> corré:
+> corré una de estas desde el directorio del proyecto de data analytics
+> destino:
 >
 > ```bash
-> make install-all          # o:  node ./bin/install.js install --all
+> # Vía npm (recomendada — agents + skills, una sola corrida):
+> npx data-analytics-agents install --all
+>
+> # Vía skills.sh (solo skills, sin agents):
+> npx skills add berriosb/data-analytics-agents
+>
+> # Vía clone directo (alternativa sin npm):
+> git clone https://github.com/berriosb/data-analytics-agents.git
+> cd data-analytics-agents && make install-all
 > ```
 >
 > Un solo comando, idempotente, usa symlinks así que `agents/*.md` y
