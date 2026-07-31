@@ -45,16 +45,19 @@ data-analytics/
 
 ### Vía npm (recomendada — agents + skills)
 
-Una vez publicado a npm:
-
 ```bash
-# Desde el directorio de cualquier proyecto de data analytics:
+# 1. Desde el directorio del proyecto de data analytics destino,
+#    instalá el toolkit como dev dependency:
+npm install --save-dev data-analytics-agents
+
+# 2. Corré el instalador (registra agents + skills en los 4 CLIs):
 npx data-analytics-agents install --all
 ```
 
-Esto registra las 4 personas y las 8 skills en OpenCode, Claude Code y
-Codex (project-local), y deja el plugin de Agy staged en
-`~/.gemini/antigravity-cli/plugins/`.
+**Por qué este patrón y no `npx ... install --all` directo**: el primer
+`npm install` deja el toolkit en `node_modules/data-analytics-agents/`
+(persistente). El segundo paso crea los symlinks hacia ahí, así que no se
+rompen cuando npm limpia el cache de `npx`.
 
 ### Vía skills.sh (solo skills, sin agents)
 
@@ -91,10 +94,18 @@ claude -m opus --agent reporting-analyst "Tendencia mensual de revenue."
 agy -m gemini-3.6-flash --agent data-explorer "Perfilá examples/ventas_sample.csv."
 ```
 
-`make install-all` (o `npx data-analytics-agents install --all`) es
+`npx data-analytics-agents install --all` (o `make install-all`) es
 **idempotente** (usa symlinks); correrlo de nuevo es un no-op. Después de
 que corrió, las ediciones a `agents/<name>.md` y `skills/<name>/SKILL.md`
 se toman en el acto por cada CLI — sin re-instalar.
+
+### Verificar el estado
+
+```bash
+# Desde el proyecto destino:
+npx data-analytics-agents list   # muestra los symlinks activos
+opencode agent list             # debe incluir data-explorer, sql-analyst, …
+```
 
 ## Por qué hace falta un instalador
 

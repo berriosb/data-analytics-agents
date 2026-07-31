@@ -7,13 +7,20 @@ como contexto.
 
 > **Inicio rápido** — para registrar las 4 personas como agentes reales en
 > OpenCode (y como agentes/skills project-local en Claude Code, Codex y Agy),
-> corré una de estas desde el directorio del proyecto de data analytics
+> corré estos dos pasos desde el directorio del proyecto de data analytics
 > destino:
 >
 > ```bash
-> # Vía npm (recomendada — agents + skills, una sola corrida):
-> npx data-analytics-agents install --all
+> # 1. Instalá el toolkit como dev dependency (deja el paquete en node_modules/):
+> npm install --save-dev data-analytics-agents
 >
+> # 2. Corré el instalador (registra agents + skills en los 4 CLIs):
+> npx data-analytics-agents install --all
+> ```
+>
+> Alternativas:
+>
+> ```bash
 > # Vía skills.sh (solo skills, sin agents):
 > npx skills add berriosb/data-analytics-agents
 >
@@ -22,7 +29,10 @@ como contexto.
 > cd data-analytics-agents && make install-all
 > ```
 >
-> Un solo comando, idempotente, usa symlinks así que `agents/*.md` y
+> **Por qué dos pasos en el flujo npm**: `npm install` deja el toolkit en
+> `node_modules/data-analytics-agents/` (persistente). El instalador crea
+> los symlinks hacia ahí, así no se rompen cuando npm limpia el cache de
+> `npx`. Un solo comando, idempotente, usa symlinks así que `agents/*.md` y
 > `skills/*/` siguen siendo la única fuente de verdad. Destinos:
 >
 > | CLI | Qué se instala |
