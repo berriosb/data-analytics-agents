@@ -15,6 +15,7 @@ TARGET      := $(HOME)
         test-api-builder \
         test-excel-formulas \
         test-sql-write \
+        test-audit-log \
         help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
@@ -58,6 +59,7 @@ TARGET      := $(HOME)
 	@echo "  make test-api-builder       Smoke test de api-builder (genera API + pytest)"
 	@echo "  make test-excel-formulas    Smoke test de excel-formulas (extrae + clasifica + reporte)"
 	@echo "  make test-sql-write         Smoke test de sql-write (insert + audit + bloqueo DROP)"
+	@echo "  make test-audit-log         Smoke test de audit-log (PII redaction + queries)"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -216,3 +218,7 @@ test-sql-write:
 	@echo "Smoke test de sql-write (CSV → SQLite con guardrails)"
 	@if [ ! -f examples/sql_write_sample/top_clients_q2_2026.csv ]; then python3 examples/sql_write_sample/generate_sample.py; fi
 	@python3 examples/sql_write_sample/demo_offline.py 2>&1 | tail -15
+
+test-audit-log:
+	@echo "Smoke test de audit-log (10 eventos + verifica NO PII)"
+	@python3 examples/audit_log_sample/demo_offline.py 2>&1 | tail -20
