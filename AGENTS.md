@@ -82,6 +82,7 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
 | `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
 | `reporting-analyst` (export ejecutivo) | `viz-patterns` → `insight-synthesis` → `report-export` (PDF / PPTX / HTML) |
+| `reporting-analyst` (deploy servicio) | `viz-patterns` → `insight-synthesis` → **`api-builder` (FastAPI + Dockerfile + tests, OPCIONAL)** |
 
 Esto es intencional, no un descuido:
 
@@ -148,6 +149,7 @@ trigger de la `description`.
 | `model-evaluation` | Métricas de clasificación/regresión, ROC/PR, matriz de confusión, feature importance, learning curves | `skills/model-evaluation/SKILL.md` |
 | `insight-synthesis` | Convertir hallazgos → insights priorizados (Y Qué / Por Qué / Ahora Qué) | `skills/insight-synthesis/SKILL.md` |
 | `report-export` | Exportar reporte ejecutivo a PDF / PPTX / HTML standalone al final del flujo | `skills/report-export/SKILL.md` |
+| `api-builder` | Generar API REST (FastAPI + Dockerfile + tests) a partir de una funcion Python de analisis | `skills/api-builder/SKILL.md` |
 
 `schema-mapper` se carga **antes** de `sql-query-helper` (que provee idiomas
 para *escribir* consultas); `schema-mapper` cubre el paso de *descubrimiento*

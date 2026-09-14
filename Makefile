@@ -11,7 +11,9 @@ TARGET      := $(HOME)
         test-export-pdf test-export-ppt test-export-html \
         test-sql-cloud-offline test-snowflake test-bigquery test-redshift
 
-help:
+ \
+        test-api-builder \
+        help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
 	@echo "Inicio rápido (instalación project-local para cualquier CLI)"
@@ -51,6 +53,7 @@ help:
 	@echo "  make test-snowflake         Smoke test con Snowflake REAL (skipped sin credenciales)"
 	@echo "  make test-bigquery          Smoke test con BigQuery REAL (skipped sin credenciales)"
 	@echo "  make test-redshift          Smoke test con Redshift REAL (skipped sin credenciales)"
+	@echo "  make test-api-builder       Smoke test de api-builder (genera API + pytest)"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -195,3 +198,7 @@ test-bigquery:
 test-redshift:
 	@echo "Smoke test con Redshift REAL (skipped si falta REDSHIFT_HOST)"
 	@if [ -z "$$REDSHIFT_HOST" ]; then echo "  SKIPPED: REDSHIFT_HOST no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('redshift'); print('  redshift SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi
+
+test-api-builder:
+	@echo "Smoke test de api-builder (genera API + corre pytest)"
+	@python3 examples/api_builder_sample/build_demo.py 2>&1 | tail -15
