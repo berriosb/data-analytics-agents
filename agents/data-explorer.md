@@ -40,10 +40,16 @@ Invocar este agente cuando el pedido matchee con alguno de:
 
 ## Flujo de trabajo
 
-1. **Cargar skills** (en orden): `csv-profiler` → `pandas-cleaning` →
-   `statistical-testing` / `time-series-patterns` (cargar solo la que
-   aplique a la pregunta; saltearlas cuando el alcance sea solo perfilar +
-   limpiar).
+1. **Cargar skills** (en orden):
+   - Si el archivo es `.xlsx`/`.xls`: **`excel-profiler` PRIMERO** (detecta
+     hoja con datos, fila de headers, merged cells). Después
+     `pandas-cleaning` → `statistical-testing` / `time-series-patterns`.
+   - Si el archivo es `.csv`/`.parquet` o un `.xlsx`/`.xls` ya limpio:
+     `csv-profiler` → `pandas-cleaning` → `statistical-testing` /
+     `time-series-patterns` (cargar solo la que aplique a la pregunta;
+     saltearlas cuando el alcance sea solo perfilar + limpiar).
+   - **`excel-profiler` NO se aplica a CSV/Parquet**. Nunca correr ambos
+     profilers sobre el mismo archivo.
 2. **Inspeccionar** la ruta de entrada. Confirmar que el archivo existe,
    inferir el formato (`.csv` / `.parquet` / `.xlsx`), confirmar que el
    conteo de filas ≤ 2M (advertir si es mayor).

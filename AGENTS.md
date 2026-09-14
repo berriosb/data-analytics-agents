@@ -79,6 +79,7 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `sql-analyst` | `schema-mapper` → `sql-query-helper` → `query-validation` |
 | `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
+| `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
 
 Esto es intencional, no un descuido:
 
@@ -131,6 +132,7 @@ trigger de la `description`.
 |---|---|---|
 | `using-data-analytics-agents` | Decisión de clasificación / enrutamiento | `skills/using-data-analytics-agents/SKILL.md` |
 | `csv-profiler` | Primer encuentro con un archivo tabular | `skills/csv-profiler/SKILL.md` |
+| `excel-profiler` | Primer encuentro con un `.xlsx`/`.xls` corporativo sucio (merged cells, headers en filas intermedias) | `skills/excel-profiler/SKILL.md` |
 | `pandas-cleaning` | Pasos de limpieza tras aprobación del perfil | `skills/pandas-cleaning/SKILL.md` |
 | `schema-mapper` | Primer encuentro con una base de datos desconocida | `skills/schema-mapper/SKILL.md` |
 | `sql-query-helper` | Idiomas SQL según motor | `skills/sql-query-helper/SKILL.md` |

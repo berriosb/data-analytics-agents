@@ -7,7 +7,7 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test-csv test-sql test-stats test-ts test-ml
+        list skills docs test-csv test-sql test-stats test-ts test-ml test-excel
 
 help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
@@ -41,6 +41,7 @@ help:
 	@echo "  make test-stats   Smoke test de statistical-testing sobre datos sintéticos"
 	@echo "  make test-ts      Smoke test de time-series-patterns sobre una serie sintética"
 	@echo "  make test-ml      Smoke test de feature-engineering + ml-modeling + model-evaluation"
+	@echo "  make test-excel   Smoke test de excel-profiler sobre examples/excel_sample/"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -149,3 +150,7 @@ test-ts:
 test-ml:
 	@echo "Smoke test de feature-engineering + ml-modeling + model-evaluation (clasif. binaria + regresión)"
 	@python3 -c "import numpy as np, pandas as pd; from sklearn.linear_model import LogisticRegression, LinearRegression; from sklearn.model_selection import train_test_split, cross_val_score; np.random.seed(42); n=1000; X=pd.DataFrame({'a':np.random.normal(0,1,n),'b':np.random.uniform(-1,1,n),'c':np.random.choice(['x','y'],n)}); y=(X['a']+0.5*(X['c']=='x')+np.random.normal(0,0.3,n)>0).astype(int); X_enc=pd.get_dummies(X, columns=['c'], drop_first=True).astype(float); Xtr,Xte,ytr,yte=train_test_split(X_enc.values,y.values,test_size=0.2,random_state=42,stratify=y.values); lr=LogisticRegression(max_iter=1000,random_state=42); lr.fit(Xtr,ytr); cv=cross_val_score(lr,Xtr,ytr,cv=3,scoring='roc_auc'); print('clasif: CV ROC-AUC=%.3f +/- %.3f, test acc=%.3f' % (cv.mean(), cv.std(), (lr.predict(Xte)==yte).mean())); X2=pd.DataFrame({'a':np.random.uniform(0,1,n),'b':np.random.uniform(0,1,n)}); y2=3*X2['a']-2*X2['b']+np.random.normal(0,0.1,n); Xtr2,Xte2,ytr2,yte2=train_test_split(X2.values,y2.values,test_size=0.2,random_state=42); rg=LinearRegression(); rg.fit(Xtr2,ytr2); cv2=cross_val_score(rg,Xtr2,ytr2,cv=3,scoring='r2'); print('regresion: CV R2=%.3f +/- %.3f, test R2=%.3f' % (cv2.mean(), cv2.std(), rg.score(Xte2,yte2)))"
+
+test-excel:
+	@echo "Smoke test de excel-profiler sobre examples/excel_sample/ventas_q2_2026_dirty.xlsx"
+	@python3 examples/excel_sample/test_excel_profiler.py

@@ -36,3 +36,7 @@ __pycache__/
 *.bak
 *.swp
 *~
+
+# Output regenerable de los smoke tests (lo regenera `make test-*`).
+examples/excel_sample/*_profile.md
+examples/excel_sample/*_profile.json
