@@ -1,7 +1,7 @@
 {
   "name": "data-analytics-agents",
-  "version": "0.3.0",
-  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity). v0.3.0 cierra el ciclo: excel-profiler + report-export (PDF/PPT/HTML) + sql-cloud-warehouse como spec.",
+  "version": "0.4.0",
+  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity). v0.4.0 cierra el ciclo end-to-end: excel-profiler + report-export + sql-cloud-warehouse.",
   "type": "module",
   "bin": {
     "data-analytics-agents": "./bin/install.js"
@@ -28,7 +28,13 @@
     "python-pptx": "^0.6.0",
     "weasyprint": "^60.0",
     "pdfkit": "^1.0.0",
-    "beautifulsoup4": "^4.12.0"
+    "beautifulsoup4": "^4.12.0",
+    "sqlalchemy": "^2.0.0",
+    "snowflake-connector-python": "^3.0.0",
+    "sqlalchemy-bigquery": "^1.6.0",
+    "google-cloud-bigquery": "^3.0.0",
+    "sqlalchemy-redshift": "^0.8.0",
+    "redshift-connector": "^2.0.0"
   },
   "peerDependenciesMeta": {
     "openpyxl": {"optional": true},
@@ -39,7 +45,13 @@
     "python-pptx": {"optional": true},
     "weasyprint": {"optional": true},
     "pdfkit": {"optional": true},
-    "beautifulsoup4": {"optional": true}
+    "beautifulsoup4": {"optional": true},
+    "sqlalchemy": {"optional": true},
+    "snowflake-connector-python": {"optional": true},
+    "sqlalchemy-bigquery": {"optional": true},
+    "google-cloud-bigquery": {"optional": true},
+    "sqlalchemy-redshift": {"optional": true},
+    "redshift-connector": {"optional": true}
   },
   "engines": {
     "node": ">=18"

@@ -8,7 +8,8 @@ TARGET      := $(HOME)
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
         list skills docs test-csv test-sql test-stats test-ts test-ml test-excel \
-        test-export-pdf test-export-ppt test-export-html
+        test-export-pdf test-export-ppt test-export-html \
+        test-sql-cloud-offline test-snowflake test-bigquery test-redshift
 
 help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
@@ -46,6 +47,10 @@ help:
 	@echo "  make test-export-pdf   Smoke test de report-export formato PDF"
 	@echo "  make test-export-ppt   Smoke test de report-export formato PPTX"
 	@echo "  make test-export-html  Smoke test de report-export formato HTML standalone"
+	@echo "  make test-sql-cloud-offline  Smoke test de sql-cloud-warehouse (sin credenciales)"
+	@echo "  make test-snowflake         Smoke test con Snowflake REAL (skipped sin credenciales)"
+	@echo "  make test-bigquery          Smoke test con BigQuery REAL (skipped sin credenciales)"
+	@echo "  make test-redshift          Smoke test con Redshift REAL (skipped sin credenciales)"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -173,3 +178,20 @@ test-export-html:
 	@echo "Smoke test de report-export (HTML standalone)"
 	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
 	@python3 -c "import sys; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from report_export.recetas import parse_insights_markdown, build_html, verify_html; from pathlib import Path; insights=parse_insights_markdown('examples/report_export_sample/insights.md'); charts=sorted(Path('examples/report_export_sample/charts').glob('*.png')); templates=Path('skills/report-export/templates'); out=build_html(insights, charts, templates, 'examples/report_export_sample/out/reporte.html'); print('verify_html:', 'OK' if verify_html(out) else 'FAIL', out.stat().st_size, 'bytes')"
+
+test-sql-cloud-offline:
+	@echo "Smoke test de sql-cloud-warehouse SIN credenciales (dialect snippets + validate + errores)"
+	@python3 examples/sql_cloud_warehouse_sample/demo_offline.py
+	@python3 examples/sql_cloud_warehouse_sample/demo_sqlite_mock.py
+
+test-snowflake:
+	@echo "Smoke test con Snowflake REAL (skipped si falta SNOWFLAKE_ACCOUNT)"
+	@if [ -z "$$SNOWFLAKE_ACCOUNT" ]; then echo "  SKIPPED: SNOWFLAKE_ACCOUNT no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('snowflake'); print('  snowflake SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi
+
+test-bigquery:
+	@echo "Smoke test con BigQuery REAL (skipped si falta WAREHOUSE_PROJECT)"
+	@if [ -z "$$WAREHOUSE_PROJECT" ]; then echo "  SKIPPED: WAREHOUSE_PROJECT no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('bigquery'); print('  bigquery SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi
+
+test-redshift:
+	@echo "Smoke test con Redshift REAL (skipped si falta REDSHIFT_HOST)"
+	@if [ -z "$$REDSHIFT_HOST" ]; then echo "  SKIPPED: REDSHIFT_HOST no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('redshift'); print('  redshift SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi

@@ -44,3 +44,6 @@ examples/report_export_sample/out/
 
 # Sample regenerable — `make test-export-*` lo regenera si falta.
 examples/report_export_sample/charts/
+
+# Mock warehouse SQLite generado por demo_sqlite_mock.py (se recrea al correr).
+examples/sql_cloud_warehouse_sample/mock_warehouse.sqlite
