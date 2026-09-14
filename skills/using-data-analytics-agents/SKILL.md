@@ -1,6 +1,6 @@
 ---
 name: using-data-analytics-agents
-description: Clasifica una tarea de datos y enruta al agente especialista correcto (data-explorer, sql-analyst, reporting-analyst). Úsese al iniciar una sesión, cuando el pedido del usuario sea ambiguo, o cuando pregunte qué agente usar.
+description: Clasifica una tarea de datos y enruta al agente especialista correcto (data-explorer, sql-analyst, reporting-analyst, ml-modeler). Úsese al iniciar una sesión, cuando el pedido del usuario sea ambiguo, o cuando pregunte qué agente usar.
 ---
 
 # Using Data Analytics Agents
@@ -9,10 +9,10 @@ La skill de triaje. Léase una vez por tarea, clasifíquese, enrutese, parar.
 
 ## Descripción general
 
-Existen tres agentes especialistas en este toolkit. Cada uno tiene un alcance
-estrecho. Cargar el agente equivocado desperdicia contexto y produce respuestas
-superficiales. Esta skill existe para hacer la decisión de enrutamiento
-explícita y revisable.
+Existen cuatro agentes especialistas en este toolkit. Cada uno tiene un
+alcance estrecho. Cargar el agente equivocado desperdicia contexto y
+produce respuestas superficiales. Esta skill existe para hacer la decisión
+de enrutamiento explícita y revisable.
 
 ## Cuándo usar
 
@@ -48,6 +48,7 @@ Extraer el/los verbo(s) y el objetivo. Ejemplo:
 | "qué columnas / filas tiene", "hay relación entre X e Y" | CSV (sin SQL disponible) | `data-explorer` | `csv-profiler` |
 | consultar, select, join, agregar, agrupar por, filtrar where, esquema, índices, explain | base SQL, archivo .sql, SQLite | `sql-analyst` | `schema-mapper`, luego `sql-query-helper`, luego `query-validation` |
 | gráfico, plot, visualizar, dashboard, resumen ejecutivo, reporte, PDF, HTML | dataframe o resultado SQL | `reporting-analyst` | `viz-patterns`, luego `insight-synthesis` |
+| predecir, clasificar, regresión, modelo, features + target, entrenar, fit, RMSE, F1, ROC-AUC | dataset supervisado (target definido) | `ml-modeler` | `feature-engineering`, luego `ml-modeling`, luego `model-evaluation` |
 | "no sé qué tiene este archivo", "primer vistazo" | cualquier archivo de datos | `data-explorer` | `csv-profiler` primero |
 | verbos ambiguos como "resumir", "mirá", "revisá" | depende del objetivo — preguntar | triaje | ninguno (solo preguntar) |
 
