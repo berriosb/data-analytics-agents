@@ -16,10 +16,20 @@ Modulos:
 
 from .parse_insights import parse_insights_markdown
 from .render_plotly import collect_charts, plotly_html_to_png
-from .build_pdf import build_pdf
-from .build_ppt import build_ppt
 from .build_html import build_html
 from .verify import verify_pdf, verify_ppt, verify_html
+
+try:
+    from .build_pdf import build_pdf
+except ImportError:
+    def build_pdf(*args, **kwargs):  # type: ignore
+        raise ImportError("Para exportar a PDF, instalá weasyprint: pip install weasyprint")
+
+try:
+    from .build_ppt import build_ppt
+except ImportError:
+    def build_ppt(*args, **kwargs):  # type: ignore
+        raise ImportError("Para exportar a PPTX, instalá python-pptx: pip install python-pptx")
 
 __all__ = [
     "parse_insights_markdown",

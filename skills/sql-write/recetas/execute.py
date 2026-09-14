@@ -21,7 +21,10 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from sqlalchemy.engine import Engine
+try:
+    from sqlalchemy.engine import Engine
+except ImportError:
+    Engine = Any  # type: ignore
 
 from .audit import audit_log
 from .errors import SqlWriteError

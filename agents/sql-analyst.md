@@ -46,18 +46,17 @@ Invocar este agente cuando el pedido matchee con alguno de:
 
 ## Flujo de trabajo
 
-1. **Cargar skills** (en orden): `schema-mapper` → `sql-query-helper` →
-   `query-validation`.
-   - `schema-mapper` es el paso de *descubrimiento*: produce el diccionario
-     de datos y los join paths. Saltearlo solo si el esquema ya es conocido
-     y las claves de join son obvias. Genera artefactos en
-     `./schema/<db>-<fecha>/`.
-   - `sql-query-helper` es para *escribir* la consulta (idiomas según
-     motor).
-   - `query-validation` es el pase de *revisión* antes de que la consulta
-     salga a un dashboard, reporte programado o modelo de producción.
-     Saltear la revisión solo para consultas de exploración one-shot
-     (<5 líneas, una sola tabla).
+1. **Cargar skills** (en orden según el motor y objetivo):
+   - Si la fuente es un cloud warehouse (Snowflake, BigQuery, Redshift):
+     cargar `sql-cloud-warehouse` PRIMERO (conexión dialecto-aware, helpers de tipos)
+     → `schema-mapper` → `sql-query-helper` → `query-validation`.
+   - Si la fuente es relacional estándar (SQLite, Postgres, MySQL, DuckDB):
+     `schema-mapper` → `sql-query-helper` → `query-validation`.
+   - **Audit log (transversal)**: cargar `audit-log` siempre que se interactúe con
+     bases de datos para trazabilidad y redacción automática de PII (emails, RUTs, etc.).
+   - **Escritura persistente**: si el usuario pide explícitamente guardar resultados
+     en una tabla, cargar `sql-write` (modo conservador: solo `CREATE TABLE IF NOT EXISTS`
+     e `INSERT`; `DROP`/`UPDATE`/`DELETE` bloqueados; dry-run obligatorio antes de ejecutar).
 2. **Inspeccionar el esquema**:
    - SQLite: `.schema` vía `sqlite3`, o `PRAGMA table_info(<tabla>)`
    - Postgres: `\d+ <tabla>` o `information_schema.columns`

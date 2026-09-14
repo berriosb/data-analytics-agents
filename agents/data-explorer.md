@@ -44,6 +44,9 @@ Invocar este agente cuando el pedido matchee con alguno de:
    - Si el archivo es `.xlsx`/`.xls`: **`excel-profiler` PRIMERO** (detecta
      hoja con datos, fila de headers, merged cells). Después
      `pandas-cleaning` → `statistical-testing` / `time-series-patterns`.
+   - Si el usuario pide auditar o inspeccionar fórmulas del Excel:
+     cargar **`excel-formulas`** (extrae fórmulas textuales, categoriza funciones,
+     detecta volátiles y mapea dependencias).
    - Si el archivo es `.csv`/`.parquet` o un `.xlsx`/`.xls` ya limpio:
      `csv-profiler` → `pandas-cleaning` → `statistical-testing` /
      `time-series-patterns` (cargar solo la que aplique a la pregunta;

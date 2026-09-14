@@ -17,8 +17,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Engine
+try:
+    from sqlalchemy import create_engine
+    from sqlalchemy.engine import Engine
+except ImportError:
+    create_engine = None  # type: ignore
+    Engine = Any  # type: ignore
 
 
 def connect_target(target: str | Path | dict[str, Any]) -> Engine:

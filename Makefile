@@ -7,7 +7,7 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test-csv test-sql test-stats test-ts test-ml test-excel \
+        list skills docs test test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
         test-sql-cloud-offline test-snowflake test-bigquery test-redshift \
         test-api-builder test-excel-formulas test-sql-write test-audit-log \
@@ -15,6 +15,9 @@ TARGET      := $(HOME)
         help
         help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
+	@echo ""
+	@echo "Test suite unificado"
+	@echo "  make test                Corre todos los smoke tests offline disponibles"
 	@echo ""
 	@echo "Inicio rápido (instalación project-local para cualquier CLI)"
 	@echo "  make install-opencode    Arregla el descubrimiento de OpenCode (registra 4 personas)"
@@ -128,7 +131,20 @@ list:
 	@ls -la $(PROJECT_DIR)/.agents 2>/dev/null || echo "  (no hay .agents/ — corré 'make install-codex')"
 	@echo ""
 	@echo "--- skills user-level (~/.agents/skills/, compartidas por todos los CLIs) ---"
-	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|statistical-testing|time-series-patterns|feature-engineering|ml-modeling|model-evaluation|using-data-analytics-agents)" || echo "  (ninguna — corré 'make install-skills')"
+	@if [ -d "$(HOME)/.agents/skills" ]; then \
+		found=0; \
+		for s in $(PROJECT_DIR)/skills/*; do \
+			[ -d "$$s" ] || continue; \
+			name=$$(basename "$$s"); \
+			if [ -e "$(HOME)/.agents/skills/$$name" ]; then \
+				echo "  ✓ $$name"; \
+				found=$$((found + 1)); \
+			fi; \
+		done; \
+		[ $$found -eq 0 ] && echo "  (ninguna instalada — corré 'make install-skills')"; \
+	else \
+		echo "  (no existe ~/.agents/skills/ — corré 'make install-skills')"; \
+	fi
 	@echo ""
 	@echo "--- plugin de Antigravity (user-level, opcional) ---"
 	@ls -1 $(HOME)/.gemini/antigravity-cli/plugins/data-analytics-agents/ 2>/dev/null || echo "  (no instalado — corré 'make install-agy')"
@@ -137,7 +153,15 @@ list:
 	@opencode agent list 2>/dev/null | grep -E "^[a-z][a-z-]+ \(" | sort -u || echo "  (opencode no está en el PATH)"
 
 skills:
-	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|statistical-testing|time-series-patterns|feature-engineering|ml-modeling|model-evaluation|using-data-analytics-agents)"
+	@if [ -d "$(HOME)/.agents/skills" ]; then \
+		for s in $(PROJECT_DIR)/skills/*; do \
+			[ -d "$$s" ] || continue; \
+			name=$$(basename "$$s"); \
+			if [ -e "$(HOME)/.agents/skills/$$name" ]; then \
+				echo "$$name"; \
+			fi; \
+		done; \
+	fi
 
 docs:
 	@echo "Abrí estos:"
@@ -145,6 +169,10 @@ docs:
 	@echo "  $(PROJECT_DIR)/agents/<name>.md       — prompts detallados de las personas"
 	@echo "  $(PROJECT_DIR)/skills/<name>/SKILL.md — cuerpos detallados de las skills"
 	@echo "  $(PROJECT_DIR)/bin/install.js         — instalador multi-CLI"
+
+test: test-csv test-sql test-stats test-ts test-ml test-excel test-excel-formulas test-export-html test-sql-cloud-offline test-api-builder test-sql-write test-audit-log
+	@echo ""
+	@echo "✅ Todos los smoke tests completados exitosamente."
 
 test-csv:
 	@echo "Corre los snippets de csv-profiler localmente sobre examples/ventas_sample.csv"
@@ -172,11 +200,13 @@ test-excel:
 
 test-export-pdf:
 	@echo "Smoke test de report-export (PDF) — genera sample si falta, exporta y valida"
+	@if ! python3 -c "import weasyprint" 2>/dev/null; then echo "  SKIPPED: weasyprint no instalada (pip install weasyprint)"; exit 0; fi
 	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
 	@python3 examples/report_export_sample/export_demo.py 2>&1 | tail -20
 
 test-export-ppt:
 	@echo "Smoke test de report-export (PPTX)"
+	@if ! python3 -c "import pptx" 2>/dev/null; then echo "  SKIPPED: python-pptx no instalada (pip install python-pptx)"; exit 0; fi
 	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
 	@python3 -c "import sys; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from report_export.recetas import parse_insights_markdown, build_ppt, verify_ppt; from pathlib import Path; insights=parse_insights_markdown('examples/report_export_sample/insights.md'); charts=sorted(Path('examples/report_export_sample/charts').glob('*.png')); out=build_ppt(insights, charts, None, 'examples/report_export_sample/out/reporte.pptx'); print('verify_ppt:', 'OK' if verify_ppt(out) else 'FAIL', out.stat().st_size, 'bytes')"
 

@@ -41,7 +41,8 @@ Invocar este agente cuando el pedido matchee con alguno de:
 ## Flujo de trabajo
 
 1. **Cargar skills** (en orden): `viz-patterns` → `statistical-testing` /
-   `time-series-patterns` (opcional, una o ninguna) → `insight-synthesis`.
+   `time-series-patterns` (opcional, una o ninguna) → `insight-synthesis` →
+   `report-export` (al final) / `api-builder` (opcional si pide servicio/API).
    - `viz-patterns` es para *graficar* (selección de tipo de gráfico +
      recetas de Plotly).
    - `statistical-testing` es **opcional**: usarla cuando un hallazgo visual
@@ -52,10 +53,16 @@ Invocar este agente cuando el pedido matchee con alguno de:
      una serie temporal y el reporte necesita descomposición, rolling
      overlay, comparativa entre periodos, o un forecast naive corto. Las
      salidas encajan en `line facetado` de `viz-patterns`.
-   - `insight-synthesis` es la *última milla*: convierte la narrativa en un
+   - `insight-synthesis` es la *síntesis analítica*: convierte la narrativa en un
      brief de insights priorizados (Y Qué / Por Qué / Ahora Qué + impacto
      × confianza × accionabilidad). Saltearla solo cuando el gráfico en sí
      mismo sea el entregable (sin narrativa, sin decisiones asociadas).
+   - `report-export` es la *última milla ejecutiva*: exporta los gráficos e
+     insights a PDF compilado (WeasyPrint), presentación editable (PPTX) o
+     archivo único interactivo (HTML standalone con base64 inline).
+   - `api-builder` es **opcional**: si el usuario pide exponer la función de
+     análisis, forecast o scoring como endpoint REST, genera una app FastAPI
+     lista con validación Pydantic, Dockerfile y tests pytest.
 2. **Confirmar los inputs**:
    - Ruta del dataframe o resultado en memoria.
    - Tipo de gráfico (si el usuario nombró uno) o pregunta a responder.
@@ -94,9 +101,14 @@ Invocar este agente cuando el pedido matchee con alguno de:
    acciones. Producir el brief de insight de 1 página (TL;DR + top-5
    insights + límites + apéndice). Saltear cuando el usuario pidió
    solamente el gráfico y la narrativa, sin decisión asociada.
-7. **Guardar las salidas** en una ruta nombrada por el usuario, por defecto
-   `./reports/`.
-8. **Parar.** No empezar una nueva pregunta — pasar el control al padre.
+7. **Exportar con `report-export` o `api-builder`** (según el entregable solicitado):
+   - Si se requiere reporte final para stakeholders: invocar `report-export`
+     para compilar a PDF (WeasyPrint), PPTX (python-pptx) o HTML autónomo.
+   - Si se requiere disponibilizar el análisis como servicio: invocar `api-builder`
+     para generar el paquete FastAPI (código, schema Pydantic, Dockerfile y pytest).
+8. **Guardar las salidas** en una ruta nombrada por el usuario, por defecto
+   `./reports/` (o `./out_api/` para APIs).
+9. **Parar.** No empezar una nueva pregunta — pasar el control al padre.
 
 ## Señales de alerta
 

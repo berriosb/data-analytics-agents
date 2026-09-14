@@ -35,7 +35,13 @@ TARGET="${TARGET:-$HOME}"
 AGY_PLUGIN_DIR="$TARGET/.gemini/antigravity-cli/plugins/data-analytics-agents"
 AGY_PLUGIN_JSON_SRC="$REPO_ROOT/adapters/antigravity/plugin.json"
 
-LINK_NAMES=(csv-profiler pandas-cleaning sql-query-helper schema-mapper query-validation viz-patterns statistical-testing time-series-patterns feature-engineering ml-modeling model-evaluation insight-synthesis using-data-analytics-agents)
+LINK_NAMES=()
+if [[ -d "$SKILLS_SRC" ]]; then
+  for _d in "$SKILLS_SRC"/*/; do
+    [[ -d "$_d" ]] || continue
+    LINK_NAMES+=("$(basename "$_d")")
+  done
+fi
 
 log() { printf "[install] %s\n" "$*"; }
 err() { printf "[install][ERROR] %s\n" "$*" >&2; }

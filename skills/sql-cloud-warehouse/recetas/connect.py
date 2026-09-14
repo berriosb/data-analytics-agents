@@ -18,7 +18,10 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from sqlalchemy.engine import Engine
+try:
+    from sqlalchemy.engine import Engine
+except ImportError:
+    Engine = Any  # type: ignore
 
 from .errors import MissingCredentialsError, MissingDependencyError
 

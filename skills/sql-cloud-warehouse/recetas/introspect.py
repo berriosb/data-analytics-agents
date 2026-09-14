@@ -16,7 +16,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from sqlalchemy.engine import Engine
+try:
+    from sqlalchemy.engine import Engine
+except ImportError:
+    Engine = Any  # type: ignore
 
 
 _INTROSPECT_QUERY_CLOUD = """

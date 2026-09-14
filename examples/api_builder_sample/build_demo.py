@@ -17,6 +17,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from skills_loader import load_skill_packages
 load_skill_packages("skills")
 
+try:
+    import fastapi  # noqa: F401
+except ImportError:
+    print("  SKIPPED: fastapi no instalada (pip install fastapi uvicorn httpx)")
+    sys.exit(0)
+
 from api_builder.recetas import build_api
 
 

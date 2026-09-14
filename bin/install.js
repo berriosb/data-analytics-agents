@@ -29,22 +29,28 @@ const AGENTS_DIR = join(REPO_ROOT, "agents");
 const SKILLS_DIR = join(REPO_ROOT, "skills");
 const ADAPTERS_DIR = join(REPO_ROOT, "adapters");
 
-const AGENT_NAMES = ["data-explorer", "sql-analyst", "reporting-analyst", "ml-modeler", "using-data-analytics-agents"];
-const SKILL_NAMES = [
-  "csv-profiler",
-  "pandas-cleaning",
-  "sql-query-helper",
-  "schema-mapper",
-  "query-validation",
-  "viz-patterns",
-  "statistical-testing",
-  "time-series-patterns",
-  "feature-engineering",
-  "ml-modeling",
-  "model-evaluation",
-  "insight-synthesis",
-  "using-data-analytics-agents",
-];
+function getAgentNames() {
+  if (existsSync(AGENTS_DIR)) {
+    return readdirSync(AGENTS_DIR)
+      .filter((f) => f.endsWith(".md") && !f.startsWith("_"))
+      .map((f) => f.replace(/\.md$/, ""))
+      .sort();
+  }
+  return ["data-explorer", "sql-analyst", "reporting-analyst", "ml-modeler", "using-data-analytics-agents"];
+}
+
+function getSkillNames() {
+  if (existsSync(SKILLS_DIR)) {
+    return readdirSync(SKILLS_DIR, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && existsSync(join(SKILLS_DIR, d.name, "SKILL.md")))
+      .map((d) => d.name)
+      .sort();
+  }
+  return [];
+}
+
+const AGENT_NAMES = getAgentNames();
+const SKILL_NAMES = getSkillNames();
 
 // ---- helpers de salida ------------------------------------------------------
 

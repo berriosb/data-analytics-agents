@@ -11,11 +11,13 @@ impulsado por un único `AGENTS.md` en la raíz del proyecto, con un
 OpenCode, Claude Code, Codex y Antigravity CLI (`agy`) auto-descubren todos
 `AGENTS.md` cuando se lanzan desde el directorio del proyecto y levantan
 las cinco personas (`data-explorer`, `sql-analyst`, `reporting-analyst`,
-`ml-modeler`, `using-data-analytics-agents`) más trece skills
+`ml-modeler`, `using-data-analytics-agents`) más veinte skills
 (`csv-profiler`, `pandas-cleaning`, `sql-query-helper`, `schema-mapper`,
 `query-validation`, `viz-patterns`, `statistical-testing`,
 `time-series-patterns`, `feature-engineering`, `ml-modeling`,
-`model-evaluation`, `insight-synthesis`, `using-data-analytics-agents`).
+`model-evaluation`, `insight-synthesis`, `using-data-analytics-agents`,
+`excel-profiler`, `excel-formulas`, `report-export`, `sql-cloud-warehouse`,
+`sql-write`, `audit-log`, `api-builder`).
 
 ```
 data-analytics/
@@ -29,23 +31,31 @@ data-analytics/
 ├── skills/                     # formato SKILL.md (frontmatter: name + description)
 │   ├── using-data-analytics-agents/SKILL.md
 │   ├── csv-profiler/SKILL.md
+│   ├── excel-profiler/SKILL.md
+│   ├── excel-formulas/SKILL.md
 │   ├── pandas-cleaning/SKILL.md
-│   ├── sql-query-helper/SKILL.md
 │   ├── schema-mapper/SKILL.md
+│   ├── sql-query-helper/SKILL.md
 │   ├── query-validation/SKILL.md
+│   ├── sql-cloud-warehouse/SKILL.md
+│   ├── sql-write/SKILL.md
+│   ├── audit-log/SKILL.md
 │   ├── viz-patterns/SKILL.md
 │   ├── statistical-testing/SKILL.md
 │   ├── time-series-patterns/SKILL.md
 │   ├── feature-engineering/SKILL.md
 │   ├── ml-modeling/SKILL.md
 │   ├── model-evaluation/SKILL.md
-│   └── insight-synthesis/SKILL.md
-├── bin/install.js              # ⭐ instalador multi-CLI (Node ESM, 0 deps)
+│   ├── insight-synthesis/SKILL.md
+│   ├── report-export/SKILL.md
+│   └── api-builder/SKILL.md
+├── bin/install.js              # ⭐ instalador multi-CLI (Node ESM, 0 deps, dynamic discovery)
 ├── package.json                # expone el bin `data-analytics-agents`
+├── requirements-dev.txt        # dependencias Python para correr tests
 ├── adapters/antigravity/       # manifest del plugin de Agy (usado por install.js)
-├── examples/                   # CSV y SQLite de muestra para smoke-testing
+├── examples/                   # muestras y smoke tests ejecutables
 ├── scripts/install.sh          # instalador user-level legacy (solo skills + Agy)
-├── Makefile                    # wrapper fino alrededor de bin/install.js
+├── Makefile                    # wrapper fino alrededor de bin/install.js y tests
 └── README.md                   # este archivo
 ```
 
@@ -184,7 +194,7 @@ echo "data/" > .gitignore
 npm init -y >/dev/null
 npm install --save-dev data-analytics-agents
 
-# 3. Registrá las 5 personas y las 13 skills en los CLIs que uses
+# 3. Registrá las 5 personas y las 20 skills en los CLIs que uses
 npx data-analytics-agents install --all
 # → crea .opencode/, .claude/, .agents/ con symlinks al toolkit
 
@@ -258,13 +268,23 @@ cualquiera de los flags `--agent <name>`. Editá `agents/*.md` o
 ## Smoke tests
 
 ```bash
-make list          # muestra qué está instalado y dónde
-make skills        # lista de skills disponibles a nivel usuario
-make test-csv      # corre los snippets de csv-profiler sobre el CSV de muestra
-make test-sql      # conecta a la SQLite de muestra
-make test-stats    # smoke test de statistical-testing sobre datos sintéticos
-make test-ts       # smoke test de time-series-patterns sobre datos sintéticos
-make test-ml       # smoke test del pipeline ML (clasif + regresión) sobre datos sintéticos
+make list                    # muestra qué está instalado y dónde
+make skills                  # lista de skills disponibles a nivel usuario
+make test                    # corre TODOS los smoke tests offline disponibles
+
+# Tests individuales por componente:
+make test-csv                # csv-profiler sobre CSV de muestra
+make test-sql                # consulta básica SQLite de muestra
+make test-stats              # statistical-testing sobre datos sintéticos
+make test-ts                 # time-series-patterns sobre datos sintéticos
+make test-ml                 # pipeline ML supervisado (clasif + regresión)
+make test-excel              # excel-profiler (hojas, headers, celdas combinadas)
+make test-excel-formulas     # excel-formulas (extracción y clasificación AST)
+make test-export-html        # report-export (HTML standalone con base64 inline)
+make test-sql-cloud-offline  # sql-cloud-warehouse (snippets dialecto-aware y validaciones)
+make test-api-builder        # api-builder (generación FastAPI + validación pytest)
+make test-sql-write          # sql-write (guardrails contra queries destructivas)
+make test-audit-log          # audit-log (trazabilidad y redacción de PII)
 ```
 
 ## Limpieza
@@ -322,17 +342,26 @@ agente las trae del entorno Python del usuario):
 - `statsmodels` — opcional, solo para los snippets Tier 2 de
   `time-series-patterns` (decompose, ADF, ACF/PACF).
 
-**Fuera de alcance** (extensiones posibles, no implementadas):
+## Extensiones v0.3.0 - v0.8.0 (ADR-001 y ADR-002)
 
-- Búsqueda de hiperparámetros (`GridSearchCV`, `RandomizedSearchCV`) —
-  mencionable como bloque explícito, no como snippet pre-aprobado.
-- Modelos no supervisados (clustering, PCA, anomaly detection) — fuera de
-  alcance para v2.
-- Deep learning (Keras, PyTorch) — fuera de alcance.
-- XGBoost / LightGBM — extras opcionales; `GradientBoosting` de sklearn
-  es la base comparable.
-- Deployment / serving / monitoreo — fuera de alcance; el agente produce
-  modelos serializables, no servicios.
+Además del ciclo clásico de EDA y modelado supervisado, el toolkit incorpora capacidades de entrega de extremo a extremo:
+
+- **ADR-001 (v0.2.0 – v0.4.0: Entrega Ejecutiva y Cloud)**:
+  - `excel-profiler`: perfilado robusto de hojas Excel corporativas complejas (detección de hoja con datos reales, headers desplazados y celdas combinadas).
+  - `report-export`: exportación ejecutiva a PDF (WeasyPrint), presentaciones PPTX (python-pptx) y HTML autónomo interactivo (base64 inline).
+  - `sql-cloud-warehouse`: conexión e introspección a Snowflake, BigQuery y Redshift con snippets dialecto-aware (`DATE_TRUNC`, `SAFE_CAST`/`TRY_CAST`, condicionales).
+
+- **ADR-002 (v0.5.0 – v0.8.0: Análisis a Servicio con Guardrails)**:
+  - `api-builder`: conversión de funciones Python de análisis/scoring en servicios REST vivos con FastAPI, validación Pydantic, Dockerfile y tests pytest.
+  - `excel-formulas`: auditoría y parsing de fórmulas Excel a AST textual con categorización funcional y detección de volatilidad.
+  - `sql-write`: guardrails de escritura SQL en modo conservador (`CREATE TABLE IF NOT EXISTS`, `INSERT`; dry-run obligatorio y bloqueo estricto de sentencias destructivas `DROP`/`UPDATE`/`DELETE`).
+  - `audit-log`: trazabilidad transversal append-only con redacción automática de datos sensibles (PII: emails, teléfonos, RUTs).
+
+**Fuera de alcance actual** (extensiones futuras):
+- Búsqueda exhaustiva de hiperparámetros automatizada (`AutoML`).
+- Modelos no supervisados (clustering, PCA).
+- Deep learning (Keras, PyTorch).
+- Dialectos adicionales de cloud warehouse (Databricks Spark SQL, diferido a ADR-003).
 
 ## Qué cambió en esta revisión (vs el diseño anterior con `make install`)
 

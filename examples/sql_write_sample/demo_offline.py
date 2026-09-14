@@ -26,7 +26,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from skills_loader import load_skill_packages
 load_skill_packages("skills")
 
-from sqlalchemy import text
+try:
+    from sqlalchemy import text
+except ImportError:
+    print("  SKIPPED: sqlalchemy no instalada (pip install sqlalchemy)")
+    sys.exit(0)
 
 from sql_write.recetas import (
     connect_target, dry_run, execute_insert,
