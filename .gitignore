@@ -48,6 +48,7 @@ examples/report_export_sample/charts/
 
 # Mock warehouse SQLite generado por demo_sqlite_mock.py (se recrea al correr).
 examples/sql_cloud_warehouse_sample/mock_warehouse.sqlite
+examples/sql_write_sample/demo_results.sqlite
 
 # API generada por api-builder (se regenera via make test-api-builder).
 examples/api_builder_sample/out_api/

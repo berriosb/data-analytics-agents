@@ -77,6 +77,7 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `using-data-analytics-agents` | (ninguna — triaje puro, sin carga de skills) |
 | `data-explorer` | `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` |
 | `sql-analyst` (local) | `schema-mapper` → `sql-query-helper` → `query-validation` |
+| `sql-analyst` (escribir resultados, modo conservador) | `sql-write` (SOLO si el usuario pide persistir; INSERT/CREATE bloqueados, DROP/UPDATE/DELETE rejected) |
 | `sql-analyst` (cloud: Snowflake/BigQuery/Redshift) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` |
 | `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` → **`report-export` (AL FINAL)** |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
@@ -138,6 +139,7 @@ trigger de la `description`.
 | `csv-profiler` | Primer encuentro con un archivo tabular | `skills/csv-profiler/SKILL.md` |
 | `excel-profiler` | Primer encuentro con un `.xlsx`/`.xls` corporativo sucio (merged cells, headers en filas intermedias) | `skills/excel-profiler/SKILL.md` |
 | `excel-formulas` | Auditar formulas de un Excel (formula textual + categoria + volatile + errores) | `skills/excel-formulas/SKILL.md` |
+| `sql-write` | Persistir resultados en DB (modo conservador: solo CREATE/INSERT, audit log) | `skills/sql-write/SKILL.md` |
 | `pandas-cleaning` | Pasos de limpieza tras aprobación del perfil | `skills/pandas-cleaning/SKILL.md` |
 | `schema-mapper` | Primer encuentro con una base de datos desconocida | `skills/schema-mapper/SKILL.md` |
 | `sql-query-helper` | Idiomas SQL según motor | `skills/sql-query-helper/SKILL.md` |

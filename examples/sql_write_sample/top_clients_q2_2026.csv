@@ -1,0 +1,6 @@
+cliente_id,nombre,revenue,segmento
+1,ACME Corp,2300.0,Enterprise
+2,Globex,1800.0,Enterprise
+3,Initech,1200.0,Mid-market
+4,Hooli,950.0,Mid-market
+5,Pied Piper,800.0,SMB
