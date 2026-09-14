@@ -9,13 +9,10 @@ TARGET      := $(HOME)
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
         list skills docs test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
-        test-sql-cloud-offline test-snowflake test-bigquery test-redshift
-
- \
-        test-api-builder \
-        test-excel-formulas \
-        test-sql-write \
-        test-audit-log \
+        test-sql-cloud-offline test-snowflake test-bigquery test-redshift \
+        test-api-builder test-excel-formulas test-sql-write test-audit-log \
+        clean-cache publish \
+        help
         help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
@@ -222,3 +219,18 @@ test-sql-write:
 test-audit-log:
 	@echo "Smoke test de audit-log (10 eventos + verifica NO PII)"
 	@python3 examples/audit_log_sample/demo_offline.py 2>&1 | tail -20
+
+# Limpiar caches Python locales ANTES de npm publish (los __pycache__
+# regenerados por los tests van al tarball si no se limpian).
+# Usar paths absolutos para NO tocar caches de otros proyectos en home/.
+clean-cache:
+	@echo "Limpiando __pycache__/, *.pyc y .pytest_cache/ del repo..."
+	@find $(PROJECT_DIR) -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+	@find $(PROJECT_DIR) -name "*.pyc" -delete 2>/dev/null || true
+	@find $(PROJECT_DIR) -name ".pytest_cache" -type d -exec rm -rf {} + 2>/dev/null || true
+	@echo "OK: caches locales eliminados"
+
+publish: clean-cache
+	npm publish --access public
+	@echo ""
+	@echo "OK: npm publish completo. NO olvides tag + GitHub Release."
