@@ -7,7 +7,8 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test-csv test-sql test-stats test-ts test-ml test-excel
+        list skills docs test-csv test-sql test-stats test-ts test-ml test-excel \
+        test-export-pdf test-export-ppt test-export-html
 
 help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
@@ -42,6 +43,9 @@ help:
 	@echo "  make test-ts      Smoke test de time-series-patterns sobre una serie sintética"
 	@echo "  make test-ml      Smoke test de feature-engineering + ml-modeling + model-evaluation"
 	@echo "  make test-excel   Smoke test de excel-profiler sobre examples/excel_sample/"
+	@echo "  make test-export-pdf   Smoke test de report-export formato PDF"
+	@echo "  make test-export-ppt   Smoke test de report-export formato PPTX"
+	@echo "  make test-export-html  Smoke test de report-export formato HTML standalone"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -154,3 +158,18 @@ test-ml:
 test-excel:
 	@echo "Smoke test de excel-profiler sobre examples/excel_sample/ventas_q2_2026_dirty.xlsx"
 	@python3 examples/excel_sample/test_excel_profiler.py
+
+test-export-pdf:
+	@echo "Smoke test de report-export (PDF) — genera sample si falta, exporta y valida"
+	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
+	@python3 examples/report_export_sample/export_demo.py 2>&1 | tail -20
+
+test-export-ppt:
+	@echo "Smoke test de report-export (PPTX)"
+	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
+	@python3 -c "import sys; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from report_export.recetas import parse_insights_markdown, build_ppt, verify_ppt; from pathlib import Path; insights=parse_insights_markdown('examples/report_export_sample/insights.md'); charts=sorted(Path('examples/report_export_sample/charts').glob('*.png')); out=build_ppt(insights, charts, None, 'examples/report_export_sample/out/reporte.pptx'); print('verify_ppt:', 'OK' if verify_ppt(out) else 'FAIL', out.stat().st_size, 'bytes')"
+
+test-export-html:
+	@echo "Smoke test de report-export (HTML standalone)"
+	@if [ ! -f examples/report_export_sample/charts/figura_1_revenue_lineal.png ]; then python3 examples/report_export_sample/generate_sample.py; fi
+	@python3 -c "import sys; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from report_export.recetas import parse_insights_markdown, build_html, verify_html; from pathlib import Path; insights=parse_insights_markdown('examples/report_export_sample/insights.md'); charts=sorted(Path('examples/report_export_sample/charts').glob('*.png')); templates=Path('skills/report-export/templates'); out=build_html(insights, charts, templates, 'examples/report_export_sample/out/reporte.html'); print('verify_html:', 'OK' if verify_html(out) else 'FAIL', out.stat().st_size, 'bytes')"

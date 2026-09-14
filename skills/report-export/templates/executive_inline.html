@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>{{title}}</title>
+  <style>{{styles}}</style>
+</head>
+<body>
+  <header class="cover">
+    <img src="{{logo_data_uri}}" alt="Logo" class="cover-logo" />
+    <h1 class="cover-title">{{title}}</h1>
+    <p class="cover-meta">{{date}} · {{author}}</p>
+    {{summary_html}}
+  </header>
+
+  <main>
+    <section class="charts">
+      <h2 class="section-title">Figuras</h2>
+      {{charts_html}}
+    </section>
+
+    <section class="insights">
+      <h2 class="section-title">Insights</h2>
+      {{insights_html}}
+    </section>
+  </main>
+
+  <footer>
+    <p class="footer-text">Generado por data-analytics-agents · report-export · {{date}}</p>
+  </footer>
+</body>
+</html>

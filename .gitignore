@@ -40,3 +40,7 @@ __pycache__/
 # Output regenerable de los smoke tests (lo regenera `make test-*`).
 examples/excel_sample/*_profile.md
 examples/excel_sample/*_profile.json
+examples/report_export_sample/out/
+
+# Sample regenerable — `make test-export-*` lo regenera si falta.
+examples/report_export_sample/charts/

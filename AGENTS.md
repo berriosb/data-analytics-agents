@@ -77,9 +77,10 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `using-data-analytics-agents` | (ninguna — triaje puro, sin carga de skills) |
 | `data-explorer` | `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` |
 | `sql-analyst` | `schema-mapper` → `sql-query-helper` → `query-validation` |
-| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` |
+| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` → **`report-export` (AL FINAL)** |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
 | `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
+| `reporting-analyst` (export ejecutivo) | `viz-patterns` → `insight-synthesis` → `report-export` (PDF / PPTX / HTML) |
 
 Esto es intencional, no un descuido:
 
@@ -144,6 +145,7 @@ trigger de la `description`.
 | `ml-modeling` | Entrenar modelos supervisados sklearn (linear, logistic, tree, RF, GBM, CV) | `skills/ml-modeling/SKILL.md` |
 | `model-evaluation` | Métricas de clasificación/regresión, ROC/PR, matriz de confusión, feature importance, learning curves | `skills/model-evaluation/SKILL.md` |
 | `insight-synthesis` | Convertir hallazgos → insights priorizados (Y Qué / Por Qué / Ahora Qué) | `skills/insight-synthesis/SKILL.md` |
+| `report-export` | Exportar reporte ejecutivo a PDF / PPTX / HTML standalone al final del flujo | `skills/report-export/SKILL.md` |
 
 `schema-mapper` se carga **antes** de `sql-query-helper` (que provee idiomas
 para *escribir* consultas); `schema-mapper` cubre el paso de *descubrimiento*
