@@ -41,6 +41,7 @@ __pycache__/
 examples/excel_sample/*_profile.md
 examples/excel_sample/*_profile.json
 examples/report_export_sample/out/
+examples/excel_formulas_sample/revenue_q2_2026_with_formulas_formulas.md
 
 # Sample regenerable — `make test-export-*` lo regenera si falta.
 examples/report_export_sample/charts/

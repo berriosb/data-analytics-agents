@@ -81,6 +81,7 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` → **`report-export` (AL FINAL)** |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
 | `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
+| `data-explorer` (auditoria formulas) | `excel-formulas` (SOLO si el usuario pide auditar o ver formulas) |
 | `reporting-analyst` (export ejecutivo) | `viz-patterns` → `insight-synthesis` → `report-export` (PDF / PPTX / HTML) |
 | `reporting-analyst` (deploy servicio) | `viz-patterns` → `insight-synthesis` → **`api-builder` (FastAPI + Dockerfile + tests, OPCIONAL)** |
 
@@ -136,6 +137,7 @@ trigger de la `description`.
 | `using-data-analytics-agents` | Decisión de clasificación / enrutamiento | `skills/using-data-analytics-agents/SKILL.md` |
 | `csv-profiler` | Primer encuentro con un archivo tabular | `skills/csv-profiler/SKILL.md` |
 | `excel-profiler` | Primer encuentro con un `.xlsx`/`.xls` corporativo sucio (merged cells, headers en filas intermedias) | `skills/excel-profiler/SKILL.md` |
+| `excel-formulas` | Auditar formulas de un Excel (formula textual + categoria + volatile + errores) | `skills/excel-formulas/SKILL.md` |
 | `pandas-cleaning` | Pasos de limpieza tras aprobación del perfil | `skills/pandas-cleaning/SKILL.md` |
 | `schema-mapper` | Primer encuentro con una base de datos desconocida | `skills/schema-mapper/SKILL.md` |
 | `sql-query-helper` | Idiomas SQL según motor | `skills/sql-query-helper/SKILL.md` |

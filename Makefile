@@ -13,6 +13,7 @@ TARGET      := $(HOME)
 
  \
         test-api-builder \
+        test-excel-formulas \
         help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
@@ -54,6 +55,7 @@ TARGET      := $(HOME)
 	@echo "  make test-bigquery          Smoke test con BigQuery REAL (skipped sin credenciales)"
 	@echo "  make test-redshift          Smoke test con Redshift REAL (skipped sin credenciales)"
 	@echo "  make test-api-builder       Smoke test de api-builder (genera API + pytest)"
+	@echo "  make test-excel-formulas    Smoke test de excel-formulas (extrae + clasifica + reporte)"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -202,3 +204,8 @@ test-redshift:
 test-api-builder:
 	@echo "Smoke test de api-builder (genera API + corre pytest)"
 	@python3 examples/api_builder_sample/build_demo.py 2>&1 | tail -15
+
+test-excel-formulas:
+	@echo "Smoke test de excel-formulas (extrae + clasifica + genera reporte)"
+	@if [ ! -f examples/excel_formulas_sample/revenue_q2_2026_with_formulas.xlsx ]; then python3 examples/excel_formulas_sample/generate_sample.py; fi
+	@python3 examples/excel_formulas_sample/demo_offline.py 2>&1 | tail -15
