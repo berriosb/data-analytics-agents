@@ -35,14 +35,17 @@ jobs:
         run: |
           test -L .opencode/agents/data-explorer.md
           test -L .opencode/skills/csv-profiler
+          test -L .opencode/skills/api-builder
           test -L .claude/agents/data-explorer.md
+          test -L .claude/skills/excel-profiler
           test -L .agents/skills/csv-profiler
+          test -L .agents/skills/audit-log
 
       - name: Uninstall --all
         run: node ./bin/install.js uninstall --all
 
   python-smoke:
-    name: Python smoke tests (CSV + SQLite)
+    name: Full Python smoke test suite
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -52,12 +55,12 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+          cache: "pip"
 
-      - name: Install pandas
-        run: pip install pandas
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
 
-      - name: CSV smoke test
-        run: make test-csv
-
-      - name: SQL smoke test
-        run: make test-sql
+      - name: Run unified smoke tests
+        run: make test
