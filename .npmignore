@@ -1,0 +1,53 @@
+# Cosas que NO deben ir a npm (basura regenerable + caches).
+# npm pack respeta .npmignore; NO respeta .gitignore para el tarball.
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Outputs de los smoke tests (regenerables con `make test-*`)
+examples/excel_sample/*_profile.md
+examples/excel_sample/*_profile.json
+examples/report_export_sample/out/
+examples/report_export_sample/charts/
+examples/sql_cloud_warehouse_sample/mock_warehouse.sqlite
+examples/api_builder_sample/out_api/
+
+# Skills loader top-level (es dev convenience, no parte del toolkit instalado)
+skills_loader.py
+
+# Local user-specific (nunca commitear de todos modos)
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vscode/
+.idea/
+.opencode.local.*
+.claude.local.*
+
+# Per-CLI install artifacts (los symlinks los crea el usuario en su proyecto,
+# no son parte del paquete publicado)
+.opencode/
+.claude/
+.agents/
+
+# Mi propio entorno
+.venv/
+venv/
+node_modules/
+
+# Tests internos que no deben ir a npm (los ejemplos sí)
+tests/
+
+# Documentos internos de desarrollo
+CHANGELOG.md
+TODO.md
+NOTES.md
+*.bak
+*.swp
+*~
