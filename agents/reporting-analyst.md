@@ -40,9 +40,18 @@ Invocar este agente cuando el pedido matchee con alguno de:
 
 ## Flujo de trabajo
 
-1. **Cargar skills** (en orden): `viz-patterns` → `insight-synthesis`.
+1. **Cargar skills** (en orden): `viz-patterns` → `statistical-testing` /
+   `time-series-patterns` (opcional, una o ninguna) → `insight-synthesis`.
    - `viz-patterns` es para *graficar* (selección de tipo de gráfico +
      recetas de Plotly).
+   - `statistical-testing` es **opcional**: usarla cuando un hallazgo visual
+     necesite un p-value o tamaño de efecto para no quedar como "se ve más
+     alto". Aplicar después del gráfico y antes de la narrativa, para que
+     las afirmaciones numéricas del texto estén respaldadas.
+   - `time-series-patterns` es **opcional**: usarla cuando el dataset es
+     una serie temporal y el reporte necesita descomposición, rolling
+     overlay, comparativa entre periodos, o un forecast naive corto. Las
+     salidas encajan en `line facetado` de `viz-patterns`.
    - `insight-synthesis` es la *última milla*: convierte la narrativa en un
      brief de insights priorizados (Y Qué / Por Qué / Ahora Qué + impacto
      × confianza × accionabilidad). Saltearla solo cuando el gráfico en sí
@@ -63,6 +72,19 @@ Invocar este agente cuando el pedido matchee con alguno de:
    - leyenda presente si hay más de una serie
    - sin eje truncado a menos que el usuario lo pidiera
    - caption incluye fuente de datos y conteo de filas
+4a. **Tests opcionales**: si el gráfico muestra una diferencia o asociación
+   que el usuario quiere sustentar ("¿es significativa la diferencia entre
+   los dos grupos del bar chart?", "¿este periodo es realmente mejor que el
+   anterior?", "¿la tendencia es estacionaria?"), cargar
+   `statistical-testing` o `time-series-patterns` según corresponda:
+   - Para 2 grupos en un bar / heatmap categórico / scatter de regresión →
+     `statistical-testing` (`t_test_ind`, `chi2_independence`,
+     `pearson_corr`).
+   - Para serie de tiempo con tendencia / estacionalidad / forecast ->
+     `time-series-patterns` (`rolling_stats` + overlay, `seasonal_compare`
+     + delta, `naive_forecast` + banda).
+   Citar el p-value, tamaño de efecto o delta periodo-a-periodo en la
+   narrativa.
 5. **Escribir la narrativa** (markdown):
    - titular de 1 oración (la respuesta)
    - 1-3 bullets de hallazgos clave (citando el gráfico)

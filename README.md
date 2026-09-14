@@ -9,11 +9,13 @@ impulsado por un único `AGENTS.md` en la raíz del proyecto, con un
 `bin/install.js` de un comando para registrar agentes project-local.
 
 OpenCode, Claude Code, Codex y Antigravity CLI (`agy`) auto-descubren todos
-`AGENTS.md` cuando se lanzan desde el directorio del proyecto y levantan las
-cuatro personas (`data-explorer`, `sql-analyst`, `reporting-analyst`,
-`using-data-analytics-agents`) más ocho skills (`csv-profiler`,
-`pandas-cleaning`, `sql-query-helper`, `schema-mapper`, `query-validation`,
-`viz-patterns`, `insight-synthesis`, `using-data-analytics-agents`).
+`AGENTS.md` cuando se lanzan desde el directorio del proyecto y levantan
+las cinco personas (`data-explorer`, `sql-analyst`, `reporting-analyst`,
+`ml-modeler`, `using-data-analytics-agents`) más trece skills
+(`csv-profiler`, `pandas-cleaning`, `sql-query-helper`, `schema-mapper`,
+`query-validation`, `viz-patterns`, `statistical-testing`,
+`time-series-patterns`, `feature-engineering`, `ml-modeling`,
+`model-evaluation`, `insight-synthesis`, `using-data-analytics-agents`).
 
 ```
 data-analytics/
@@ -22,7 +24,8 @@ data-analytics/
 │   ├── using-data-analytics-agents.md
 │   ├── data-explorer.md
 │   ├── sql-analyst.md
-│   └── reporting-analyst.md
+│   ├── reporting-analyst.md
+│   └── ml-modeler.md
 ├── skills/                     # formato SKILL.md (frontmatter: name + description)
 │   ├── using-data-analytics-agents/SKILL.md
 │   ├── csv-profiler/SKILL.md
@@ -31,6 +34,11 @@ data-analytics/
 │   ├── schema-mapper/SKILL.md
 │   ├── query-validation/SKILL.md
 │   ├── viz-patterns/SKILL.md
+│   ├── statistical-testing/SKILL.md
+│   ├── time-series-patterns/SKILL.md
+│   ├── feature-engineering/SKILL.md
+│   ├── ml-modeling/SKILL.md
+│   ├── model-evaluation/SKILL.md
 │   └── insight-synthesis/SKILL.md
 ├── bin/install.js              # ⭐ instalador multi-CLI (Node ESM, 0 deps)
 ├── package.json                # expone el bin `data-analytics-agents`
@@ -176,7 +184,7 @@ echo "data/" > .gitignore
 npm init -y >/dev/null
 npm install --save-dev data-analytics-agents
 
-# 3. Registrá las 4 personas y las 8 skills en los CLIs que uses
+# 3. Registrá las 5 personas y las 13 skills en los CLIs que uses
 npx data-analytics-agents install --all
 # → crea .opencode/, .claude/, .agents/ con symlinks al toolkit
 
@@ -254,6 +262,9 @@ make list          # muestra qué está instalado y dónde
 make skills        # lista de skills disponibles a nivel usuario
 make test-csv      # corre los snippets de csv-profiler sobre el CSV de muestra
 make test-sql      # conecta a la SQLite de muestra
+make test-stats    # smoke test de statistical-testing sobre datos sintéticos
+make test-ts       # smoke test de time-series-patterns sobre datos sintéticos
+make test-ml       # smoke test del pipeline ML (clasif + regresión) sobre datos sintéticos
 ```
 
 ## Limpieza
@@ -292,12 +303,36 @@ make cleanup-legacy      # elimina los symlinks VIEJOS por CLI de revisiones ant
   `skills.sh`), adaptado para agentes (que `skills.sh` no maneja) y para la
   superficie objetivo de los 4 CLIs usada acá.
 
-## v2 (no implementado aún)
+## Estado del v2
 
-Extensión de Data Science: 1 agente nuevo (`ml-modeler`) + 3-4 skills nuevas
-(`statistical-testing`, `ml-modeling`, `feature-engineering`, `model-evaluation`).
-La skill de triaje los va a enrutar. Agregar una entrada en `AGENTS.md` y un
-archivo nuevo en `agents/`/`skills/`. La infra queda igual.
+Extensión de Data Science **implementada**: el agente `ml-modeler` + 3
+skills (`feature-engineering`, `ml-modeling`, `model-evaluation`)
+permiten modelado supervisado completo (clasificación + regresión) sobre
+features + target limpios, con disciplina de train/test split, baseline
+previo, cross-validation, y evaluación completa (métricas + matriz de
+confusión / residuos + ROC/PR + feature importance + learning curves).
+
+**Dependencias del usuario** (no son deps de npm — el toolkit es Node; el
+agente las trae del entorno Python del usuario):
+
+- `pandas`, `numpy` — ya necesarias para `pandas-cleaning`,
+  `time-series-patterns`.
+- `scipy` — para `statistical-testing`.
+- `scikit-learn` — para el pipeline ML completo.
+- `statsmodels` — opcional, solo para los snippets Tier 2 de
+  `time-series-patterns` (decompose, ADF, ACF/PACF).
+
+**Fuera de alcance** (extensiones posibles, no implementadas):
+
+- Búsqueda de hiperparámetros (`GridSearchCV`, `RandomizedSearchCV`) —
+  mencionable como bloque explícito, no como snippet pre-aprobado.
+- Modelos no supervisados (clustering, PCA, anomaly detection) — fuera de
+  alcance para v2.
+- Deep learning (Keras, PyTorch) — fuera de alcance.
+- XGBoost / LightGBM — extras opcionales; `GradientBoosting` de sklearn
+  es la base comparable.
+- Deployment / serving / monitoreo — fuera de alcance; el agente produce
+  modelos serializables, no servicios.
 
 ## Qué cambió en esta revisión (vs el diseño anterior con `make install`)
 

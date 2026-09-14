@@ -29,7 +29,7 @@ const AGENTS_DIR = join(REPO_ROOT, "agents");
 const SKILLS_DIR = join(REPO_ROOT, "skills");
 const ADAPTERS_DIR = join(REPO_ROOT, "adapters");
 
-const AGENT_NAMES = ["data-explorer", "sql-analyst", "reporting-analyst", "using-data-analytics-agents"];
+const AGENT_NAMES = ["data-explorer", "sql-analyst", "reporting-analyst", "ml-modeler", "using-data-analytics-agents"];
 const SKILL_NAMES = [
   "csv-profiler",
   "pandas-cleaning",
@@ -37,6 +37,11 @@ const SKILL_NAMES = [
   "schema-mapper",
   "query-validation",
   "viz-patterns",
+  "statistical-testing",
+  "time-series-patterns",
+  "feature-engineering",
+  "ml-modeling",
+  "model-evaluation",
   "insight-synthesis",
   "using-data-analytics-agents",
 ];

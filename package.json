@@ -1,6 +1,6 @@
 {
   "name": "data-analytics-agents",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity).",
   "type": "module",
   "bin": {
@@ -21,7 +21,6 @@
     "node": ">=18"
   },
   "scripts": {
-    "install": "node ./bin/install.js install",
     "install:opencode": "node ./bin/install.js install --opencode",
     "install:claude": "node ./bin/install.js install --claude",
     "install:codex": "node ./bin/install.js install --codex",

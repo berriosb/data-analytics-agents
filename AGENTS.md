@@ -75,9 +75,10 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | Agente | Skills que carga (en orden) |
 |---|---|
 | `using-data-analytics-agents` | (ninguna — triaje puro, sin carga de skills) |
-| `data-explorer` | `csv-profiler` → `pandas-cleaning` |
+| `data-explorer` | `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` |
 | `sql-analyst` | `schema-mapper` → `sql-query-helper` → `query-validation` |
-| `reporting-analyst` | `viz-patterns` → `insight-synthesis` |
+| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` |
+| `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
 
 Esto es intencional, no un descuido:
 
@@ -107,6 +108,7 @@ leen el archivo relevante cuando les pedís actuar como esa persona.
 | `data-explorer` | Perfilado + limpieza de CSV / Parquet / Excel | `agents/data-explorer.md` |
 | `sql-analyst` | Inspección de esquema + consultas SQL (sqlite / postgres / mysql / duckdb) | `agents/sql-analyst.md` |
 | `reporting-analyst` | Gráficos Plotly + reporte escrito | `agents/reporting-analyst.md` |
+| `ml-modeler` | Modelado supervisado (clasificación + regresión, scikit-learn) | `agents/ml-modeler.md` |
 
 ### Cuándo usar cuál
 
@@ -115,6 +117,7 @@ leen el archivo relevante cuando les pedís actuar como esa persona.
 - **Hay un CSV / Parquet / Excel** sin DB: `data-explorer`.
 - **Hay una SQLite / SQL DB / archivo SQL**: `sql-analyst`.
 - **Ya hay números agregados o un dataframe limpio**: `reporting-analyst`.
+- **Hay features + target definido, quiere predecir**: `ml-modeler`.
 
 ## Skills
 
@@ -133,6 +136,11 @@ trigger de la `description`.
 | `sql-query-helper` | Idiomas SQL según motor | `skills/sql-query-helper/SKILL.md` |
 | `query-validation` | Revisión de una consulta antes de uso en producción | `skills/query-validation/SKILL.md` |
 | `viz-patterns` | Selección de tipo de gráfico + recetas Plotly | `skills/viz-patterns/SKILL.md` |
+| `statistical-testing` | Tests estadísticos de EDA (t-test, ANOVA, chi², correlaciones) sobre datos limpios | `skills/statistical-testing/SKILL.md` |
+| `time-series-patterns` | Análisis de series temporales (resampling, rolling, lags, descomposición, ADF, forecast naive) | `skills/time-series-patterns/SKILL.md` |
+| `feature-engineering` | Encoding, escalado, splits, polinomios, balanceo (preprocesamiento para ML) | `skills/feature-engineering/SKILL.md` |
+| `ml-modeling` | Entrenar modelos supervisados sklearn (linear, logistic, tree, RF, GBM, CV) | `skills/ml-modeling/SKILL.md` |
+| `model-evaluation` | Métricas de clasificación/regresión, ROC/PR, matriz de confusión, feature importance, learning curves | `skills/model-evaluation/SKILL.md` |
 | `insight-synthesis` | Convertir hallazgos → insights priorizados (Y Qué / Por Qué / Ahora Qué) | `skills/insight-synthesis/SKILL.md` |
 
 `schema-mapper` se carga **antes** de `sql-query-helper` (que provee idiomas
@@ -142,6 +150,33 @@ el escritor. `query-validation` se carga **después** de `sql-query-helper`
 para cubrir el pase de *revisión* antes de que la consulta salga. Por último,
 `insight-synthesis` se carga **después** de `viz-patterns` para conectar
 gráficos → insights priorizados.
+
+`statistical-testing` es **opcional** en ambos flujos (no es siempre
+necesaria). En `data-explorer` se carga **después** de `pandas-cleaning`
+porque presupone datos limpios; en `reporting-analyst` se carga **entre**
+`viz-patterns` y `insight-synthesis` cuando un hallazgo visual necesita un
+número de p-value / tamaño de efecto para no quedar como "se ve más alto".
+`data-explorer` también la puede cargar para responder preguntas analíticas
+del estilo "¿es la diferencia significativa?" antes de pasar el control a
+`reporting-analyst`.
+
+`time-series-patterns` sigue el mismo patrón: opcional, se carga **después**
+de `pandas-cleaning` cuando hay una dimensión temporal explícita en el
+dataset y la pregunta es de tendencia / estacionalidad / forecast a corto
+plazo. En `reporting-analyst` se usa para producir descomposiciones y
+overlays de rolling stats antes de la narrativa. Cubre el hueco que
+`statistical-testing` deja fuera explícitamente (autocorrelación: los
+tests paramétricos asumen independencia y dan p-values falsos sobre
+series con autocorrelación).
+
+`feature-engineering` → `ml-modeling` → `model-evaluation` forman la
+cadena de ML v2 para `ml-modeler`. El orden importa: el split es sagrado
+(primero, antes de cualquier fit), después encoding y escalado (fit solo
+en train), después modelos, después evaluación sobre el test set sagrado
+**una sola vez**. `insight-synthesis` se aplica al final si el modelo
+genera decisiones; `reporting-analyst` se invoca después para producir
+los gráficos (matriz de confusión, ROC, learning curve, feature
+importances).
 
 ## Ejemplos de invocación por CLI
 

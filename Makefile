@@ -7,7 +7,7 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test-csv test-sql
+        list skills docs test-csv test-sql test-stats test-ts test-ml
 
 help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
@@ -34,10 +34,13 @@ help:
 	@echo ""
 	@echo "Descubrimiento / smoke tests"
 	@echo "  make list         Muestra qué está instalado y dónde"
-	@echo "  make skills       Muestra las 8 skills a nivel usuario"
+	@echo "  make skills       Muestra las 13 skills a nivel usuario"
 	@echo "  make docs         Abre los archivos markdown clave"
 	@echo "  make test-csv     Smoke test de csv-profiler sobre examples/ventas_sample.csv"
 	@echo "  make test-sql     Conecta a examples/notes_example.sqlite"
+	@echo "  make test-stats   Smoke test de statistical-testing sobre datos sintéticos"
+	@echo "  make test-ts      Smoke test de time-series-patterns sobre una serie sintética"
+	@echo "  make test-ml      Smoke test de feature-engineering + ml-modeling + model-evaluation"
 
 # ---- instalaciones project-local (la ruta principal) ------------------------
 
@@ -109,7 +112,7 @@ list:
 	@ls -la $(PROJECT_DIR)/.agents 2>/dev/null || echo "  (no hay .agents/ — corré 'make install-codex')"
 	@echo ""
 	@echo "--- skills user-level (~/.agents/skills/, compartidas por todos los CLIs) ---"
-	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|using-data-analytics-agents)" || echo "  (ninguna — corré 'make install-skills')"
+	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|statistical-testing|time-series-patterns|feature-engineering|ml-modeling|model-evaluation|using-data-analytics-agents)" || echo "  (ninguna — corré 'make install-skills')"
 	@echo ""
 	@echo "--- plugin de Antigravity (user-level, opcional) ---"
 	@ls -1 $(HOME)/.gemini/antigravity-cli/plugins/data-analytics-agents/ 2>/dev/null || echo "  (no instalado — corré 'make install-agy')"
@@ -118,7 +121,7 @@ list:
 	@opencode agent list 2>/dev/null | grep -E "^[a-z][a-z-]+ \(" | sort -u || echo "  (opencode no está en el PATH)"
 
 skills:
-	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|using-data-analytics-agents)"
+	@ls -1 $(HOME)/.agents/skills/ 2>/dev/null | grep -E "(csv-profiler|pandas-cleaning|sql-query-helper|schema-mapper|query-validation|viz-patterns|insight-synthesis|statistical-testing|time-series-patterns|feature-engineering|ml-modeling|model-evaluation|using-data-analytics-agents)"
 
 docs:
 	@echo "Abrí estos:"
@@ -134,3 +137,15 @@ test-csv:
 test-sql:
 	@echo "Conecta a examples/notes_example.sqlite"
 	@python3 -c "import sqlite3; c=sqlite3.connect('examples/notes_example.sqlite'); print('clientes/productos/pedidos:', c.execute('SELECT (SELECT count(*) FROM customers),(SELECT count(*) FROM products),(SELECT count(*) FROM orders)').fetchone())"
+
+test-stats:
+	@echo "Smoke test de statistical-testing con datos sintéticos (Welch, ANOVA, chi², Shapiro)"
+	@python3 -c "import numpy as np; from scipy import stats; np.random.seed(42); a=np.random.normal(10,2,80); b=np.random.normal(11,2.5,75); welch=stats.ttest_ind(a,b,equal_var=False); anova=stats.f_oneway(a,b,np.random.normal(12,2,90)); shap=stats.shapiro(a); chi2=stats.chi2_contingency(np.array([[30,20,10],[25,30,35]])); print('Welch t-test p=%.4f n=%d' % (welch.pvalue, len(a)+len(b))); print('ANOVA p=%.4e n=%d' % (anova.pvalue, len(a)+len(b)+90)); print('Shapiro p=%.4f n=%d' % (shap.pvalue, len(a))); print('Chi2 p=%.4f n=%d' % (chi2[1], 150))"
+
+test-ts:
+	@echo "Smoke test de time-series-patterns (lite, sin statsmodels) sobre serie sintética con periodicidad semanal"
+	@python3 -c "import numpy as np, pandas as pd; np.random.seed(42); idx=pd.date_range('2023-01-01', periods=365, freq='D'); s=pd.Series(np.linspace(100,200,365)+20*np.sin(2*np.pi*np.arange(365)/7)+np.random.normal(0,5,365), index=idx); m=s.resample('MS').mean(); rs=s.rolling(7).mean(); per=[float((s.values[:-k]-s.values.mean()).dot(s.values[k:]-s.values.mean())/((s.values-s.values.mean())**2).sum()) for k in range(1,31)]; fc=s.iloc[-1]; print('resample MS n_periods=%d, mean(recent 30d)=%.2f' % (len(m), s.iloc[-30:].mean())); print('rolling 7d non-null=%d, last=%.2f' % (rs.notna().sum(), rs.iloc[-1])); print('best lag=%d, autocorr=%.4f (esperado 7)' % (int(np.argmax(per))+1, max(per))); print('naive forecast (last) = %.2f' % fc)"
+
+test-ml:
+	@echo "Smoke test de feature-engineering + ml-modeling + model-evaluation (clasif. binaria + regresión)"
+	@python3 -c "import numpy as np, pandas as pd; from sklearn.linear_model import LogisticRegression, LinearRegression; from sklearn.model_selection import train_test_split, cross_val_score; np.random.seed(42); n=1000; X=pd.DataFrame({'a':np.random.normal(0,1,n),'b':np.random.uniform(-1,1,n),'c':np.random.choice(['x','y'],n)}); y=(X['a']+0.5*(X['c']=='x')+np.random.normal(0,0.3,n)>0).astype(int); X_enc=pd.get_dummies(X, columns=['c'], drop_first=True).astype(float); Xtr,Xte,ytr,yte=train_test_split(X_enc.values,y.values,test_size=0.2,random_state=42,stratify=y.values); lr=LogisticRegression(max_iter=1000,random_state=42); lr.fit(Xtr,ytr); cv=cross_val_score(lr,Xtr,ytr,cv=3,scoring='roc_auc'); print('clasif: CV ROC-AUC=%.3f +/- %.3f, test acc=%.3f' % (cv.mean(), cv.std(), (lr.predict(Xte)==yte).mean())); X2=pd.DataFrame({'a':np.random.uniform(0,1,n),'b':np.random.uniform(0,1,n)}); y2=3*X2['a']-2*X2['b']+np.random.normal(0,0.1,n); Xtr2,Xte2,ytr2,yte2=train_test_split(X2.values,y2.values,test_size=0.2,random_state=42); rg=LinearRegression(); rg.fit(Xtr2,ytr2); cv2=cross_val_score(rg,Xtr2,ytr2,cv=3,scoring='r2'); print('regresion: CV R2=%.3f +/- %.3f, test R2=%.3f' % (cv2.mean(), cv2.std(), rg.score(Xte2,yte2)))"

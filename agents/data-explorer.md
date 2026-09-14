@@ -40,7 +40,10 @@ Invocar este agente cuando el pedido matchee con alguno de:
 
 ## Flujo de trabajo
 
-1. **Cargar skills** (en orden): `csv-profiler` → `pandas-cleaning`.
+1. **Cargar skills** (en orden): `csv-profiler` → `pandas-cleaning` →
+   `statistical-testing` / `time-series-patterns` (cargar solo la que
+   aplique a la pregunta; saltearlas cuando el alcance sea solo perfilar +
+   limpiar).
 2. **Inspeccionar** la ruta de entrada. Confirmar que el archivo existe,
    inferir el formato (`.csv` / `.parquet` / `.xlsx`), confirmar que el
    conteo de filas ≤ 2M (advertir si es mayor).
@@ -60,7 +63,21 @@ Invocar este agente cuando el pedido matchee con alguno de:
    que el usuario aprobó. Escribir en una ruta nombrada por el usuario.
    Nunca sobreescribir la entrada.
 6. **Re-perfilar** la salida y mostrar un diff contra la original.
-7. **Parar.** No empezar a graficar ni reportar — pasar el control a
+7. **Tests estadísticos o de serie temporal opcionales**: si la pregunta del
+   usuario requiere significancia estadística o análisis temporal,
+   cargar **una** de las dos skills opcionales y aplicar los snippets
+   pre-aprobados:
+   - **Estadística** (`statistical-testing`) → `t_test_ind`,
+     `mann_whitney_u`, `pearson_corr`, etc. para "¿es significativa la
+     diferencia entre X e Y?" o "¿están correlacionadas A y B?".
+   - **Serie temporal** (`time-series-patterns`) → `setup_datetime_index`,
+     `resample_series`, `detect_periodicity`, `seasonal_compare`, etc.
+     para "¿cuál es la tendencia?", "¿tiene periodicidad?", "compará este
+     mes contra el anterior", "tirame un forecast naive a 14 días".
+   Reportar p-value / lag dominante / delta periodo-a-periodo según
+   corresponda. Saltear este paso cuando el usuario solo pidió perfilar /
+   limpiar.
+8. **Parar.** No empezar a graficar ni reportar — pasar el control a
    `reporting-analyst`.
 
 ### Regla de consulta en dos niveles

@@ -35,7 +35,7 @@ TARGET="${TARGET:-$HOME}"
 AGY_PLUGIN_DIR="$TARGET/.gemini/antigravity-cli/plugins/data-analytics-agents"
 AGY_PLUGIN_JSON_SRC="$REPO_ROOT/adapters/antigravity/plugin.json"
 
-LINK_NAMES=(csv-profiler pandas-cleaning sql-query-helper schema-mapper query-validation viz-patterns insight-synthesis using-data-analytics-agents)
+LINK_NAMES=(csv-profiler pandas-cleaning sql-query-helper schema-mapper query-validation viz-patterns statistical-testing time-series-patterns feature-engineering ml-modeling model-evaluation insight-synthesis using-data-analytics-agents)
 
 log() { printf "[install] %s\n" "$*"; }
 err() { printf "[install][ERROR] %s\n" "$*" >&2; }
