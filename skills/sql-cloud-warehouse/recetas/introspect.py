@@ -116,6 +116,8 @@ def _detect_default_schema(engine: Engine) -> str:
             "BigQuery requiere pasar schema='project.dataset_name' "
             "explicitamente. Ej: introspect_schema(engine, 'mydataset')"
         )
+    if "databricks" in name:
+        return "default"
     if "redshift" in name or "postgres" in name:
         return "public"
     return "public"

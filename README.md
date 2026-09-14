@@ -349,7 +349,7 @@ Además del ciclo clásico de EDA y modelado supervisado, el toolkit incorpora c
 - **ADR-001 (v0.2.0 – v0.4.0: Entrega Ejecutiva y Cloud)**:
   - `excel-profiler`: perfilado robusto de hojas Excel corporativas complejas (detección de hoja con datos reales, headers desplazados y celdas combinadas).
   - `report-export`: exportación ejecutiva a PDF (WeasyPrint), presentaciones PPTX (python-pptx) y HTML autónomo interactivo (base64 inline).
-  - `sql-cloud-warehouse`: conexión e introspección a Snowflake, BigQuery y Redshift con snippets dialecto-aware (`DATE_TRUNC`, `SAFE_CAST`/`TRY_CAST`, condicionales).
+  - `sql-cloud-warehouse`: conexión e introspección a Snowflake, BigQuery, Redshift y Databricks (Spark SQL) con snippets dialecto-aware (`DATE_TRUNC`, `SAFE_CAST`/`TRY_CAST`, condicionales).
 
 - **ADR-002 (v0.5.0 – v0.8.0: Análisis a Servicio con Guardrails)**:
   - `api-builder`: conversión de funciones Python de análisis/scoring en servicios REST vivos con FastAPI, validación Pydantic, Dockerfile y tests pytest.
@@ -361,7 +361,6 @@ Además del ciclo clásico de EDA y modelado supervisado, el toolkit incorpora c
 - Búsqueda exhaustiva de hiperparámetros automatizada (`AutoML`).
 - Modelos no supervisados (clustering, PCA).
 - Deep learning (Keras, PyTorch).
-- Dialectos adicionales de cloud warehouse (Databricks Spark SQL, diferido a ADR-003).
 
 ## Qué cambió en esta revisión (vs el diseño anterior con `make install`)
 

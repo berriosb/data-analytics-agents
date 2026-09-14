@@ -23,3 +23,12 @@ python-pptx>=0.6.0
 
 # Excel Formulas AST (excel-formulas)
 # formulas>=1.2.0   # opcional: para parsing AST avanzado de formulas
+
+# Cloud Warehouses (sql-cloud-warehouse - opcionales)
+# snowflake-connector-python>=3.0.0
+# sqlalchemy-bigquery>=1.6.0
+# google-cloud-bigquery>=3.0.0
+# sqlalchemy-redshift>=0.8.0
+# redshift-connector>=2.0.0
+# databricks-sql-connector>=4.0.0
+# databricks-sqlalchemy>=0.3.0

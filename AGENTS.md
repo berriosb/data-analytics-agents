@@ -79,7 +79,7 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | `sql-analyst` (local) | `schema-mapper` → `sql-query-helper` → `query-validation` |
 | `sql-analyst` (escribir resultados, modo conservador) | `sql-write` (SOLO si el usuario pide persistir; INSERT/CREATE bloqueados, DROP/UPDATE/DELETE rejected) |
 | (transversal) | `audit-log` (lo carga cualquier skill que toque DB: sql-analyst, sql-cloud-warehouse, sql-write) |
-| `sql-analyst` (cloud: Snowflake/BigQuery/Redshift) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` |
+| `sql-analyst` (cloud: Snowflake/BigQuery/Redshift/Databricks) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` |
 | `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` → **`report-export` (AL FINAL)** |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
 | `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
@@ -146,7 +146,7 @@ trigger de la `description`.
 | `schema-mapper` | Primer encuentro con una base de datos desconocida | `skills/schema-mapper/SKILL.md` |
 | `sql-query-helper` | Idiomas SQL según motor | `skills/sql-query-helper/SKILL.md` |
 | `query-validation` | Revisión de una consulta antes de uso en producción | `skills/query-validation/SKILL.md` |
-| `sql-cloud-warehouse` | Conexión a Snowflake / BigQuery / Redshift + snippets dialecto-aware (IFF/IF/CASE, DATE_TRUNC, TRY_CAST/SAFE_CAST) | `skills/sql-cloud-warehouse/SKILL.md` |
+| `sql-cloud-warehouse` | Conexión a Snowflake / BigQuery / Redshift / Databricks + snippets dialecto-aware (IFF/IF/CASE, DATE_TRUNC, TRY_CAST/SAFE_CAST) | `skills/sql-cloud-warehouse/SKILL.md` |
 | `viz-patterns` | Selección de tipo de gráfico + recetas Plotly | `skills/viz-patterns/SKILL.md` |
 | `statistical-testing` | Tests estadísticos de EDA (t-test, ANOVA, chi², correlaciones) sobre datos limpios | `skills/statistical-testing/SKILL.md` |
 | `time-series-patterns` | Análisis de series temporales (resampling, rolling, lags, descomposición, ADF, forecast naive) | `skills/time-series-patterns/SKILL.md` |

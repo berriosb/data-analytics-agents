@@ -36,7 +36,7 @@ def test_offline_dialect_snippets() -> None:
     print("=== Dialect snippets (no requiere conexion) ===")
     pos = "'pos'"
     neg = "'neg'"
-    for wh in ("snowflake", "bigquery", "redshift"):
+    for wh in ("snowflake", "bigquery", "redshift", "databricks"):
         print(f"  [{wh}]")
         print(f"    date_trunc: {date_trunc('month', 'created_at', wh)}")
         print(f"    conditional: {conditional('x > 0', pos, neg, wh)}")
@@ -63,7 +63,7 @@ def test_offline_validate() -> None:
 
 def test_offline_connect_errors() -> None:
     print("=== Connect: errores accionables (sin credenciales) ===")
-    for wh in ("snowflake", "bigquery", "redshift"):
+    for wh in ("snowflake", "bigquery", "redshift", "databricks"):
         try:
             connect_warehouse(wh)
             print(f"  [{wh}] FAIL: esperaba error, no levanto nada")

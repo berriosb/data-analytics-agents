@@ -9,7 +9,7 @@ TARGET      := $(HOME)
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
         list skills docs test test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
-        test-sql-cloud-offline test-snowflake test-bigquery test-redshift \
+        test-sql-cloud-offline test-snowflake test-bigquery test-redshift test-databricks \
         test-api-builder test-excel-formulas test-sql-write test-audit-log \
         clean-cache publish \
         help
@@ -231,6 +231,10 @@ test-bigquery:
 test-redshift:
 	@echo "Smoke test con Redshift REAL (skipped si falta REDSHIFT_HOST)"
 	@if [ -z "$$REDSHIFT_HOST" ]; then echo "  SKIPPED: REDSHIFT_HOST no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('redshift'); print('  redshift SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi
+
+test-databricks:
+	@echo "Smoke test con Databricks REAL (skipped si falta DATABRICKS_SERVER_HOSTNAME)"
+	@if [ -z "$$DATABRICKS_SERVER_HOSTNAME" ]; then echo "  SKIPPED: DATABRICKS_SERVER_HOSTNAME no configurada"; exit 0; else python3 -c "import sys, os; sys.path.insert(0, '.'); from skills_loader import load_skill_packages; load_skill_packages('skills'); from sql_cloud_warehouse.recetas import connect_warehouse, test_connection; eng=connect_warehouse('databricks'); print('  databricks SELECT 1:', 'OK' if test_connection(eng) else 'FAIL')"; fi
 
 test-api-builder:
 	@echo "Smoke test de api-builder (genera API + corre pytest)"

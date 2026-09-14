@@ -26,7 +26,7 @@ except ImportError:
 from .errors import MissingCredentialsError, MissingDependencyError
 
 
-SUPPORTED = ("snowflake", "bigquery", "redshift")
+SUPPORTED = ("snowflake", "bigquery", "redshift", "databricks")
 
 
 def connect_warehouse(warehouse_type: str | None = None,
@@ -34,10 +34,10 @@ def connect_warehouse(warehouse_type: str | None = None,
     """Construye un SQLAlchemy Engine para el warehouse.
 
     Args:
-        warehouse_type: 'snowflake' | 'bigquery' | 'redshift'. Si None,
-            lee WAREHOUSE_TYPE de os.environ.
+        warehouse_type: 'snowflake' | 'bigquery' | 'redshift' | 'databricks'.
+            Si None, lee WAREHOUSE_TYPE de os.environ.
         **overrides: parametros especificos por warehouse (ej. account,
-            database) que toman precedencia sobre env.
+            database, catalog) que toman precedencia sobre env.
 
     Raises:
         MissingCredentialsError si faltan env vars
@@ -56,6 +56,8 @@ def connect_warehouse(warehouse_type: str | None = None,
         return _connect_bigquery(overrides)
     if wh == "redshift":
         return _connect_redshift(overrides)
+    if wh == "databricks":
+        return _connect_databricks(overrides)
     raise ValueError(f"Warehouse no soportado: {wh}")  # unreachable
 
 
@@ -145,6 +147,40 @@ def _connect_redshift(overrides: dict[str, Any]) -> Engine:
     pwd = quote_plus(creds["REDSHIFT_PASSWORD"])
     db = creds["REDSHIFT_DATABASE"]
     url = f"redshift+redshift_connector://{user}:{pwd}@{host}:{port}/{db}"
+    return create_engine(url)
+
+
+# ---- Databricks -------------------------------------------------------------
+
+def _connect_databricks(overrides: dict[str, Any]) -> Engine:
+    required = ["DATABRICKS_SERVER_HOSTNAME", "DATABRICKS_HTTP_PATH", "DATABRICKS_TOKEN"]
+    creds = _gather_creds(required, "databricks", overrides)
+
+    try:
+        from databricks import sqlalchemy as databricks_sa  # noqa: F401
+        from sqlalchemy import create_engine
+    except ImportError:
+        try:
+            from databricks import sql as databricks_sql  # noqa: F401
+            from sqlalchemy import create_engine
+        except ImportError as e:
+            raise MissingDependencyError(
+                "databricks-sql-connector",
+                "databricks-sql-connector databricks-sqlalchemy",
+            ) from e
+
+    host = creds["DATABRICKS_SERVER_HOSTNAME"].replace("https://", "").strip("/")
+    http_path = creds["DATABRICKS_HTTP_PATH"]
+    token = creds["DATABRICKS_TOKEN"]
+    catalog = overrides.get("DATABRICKS_CATALOG") or os.environ.get("DATABRICKS_CATALOG", "")
+    schema = overrides.get("DATABRICKS_SCHEMA") or os.environ.get("DATABRICKS_SCHEMA", "")
+
+    url = f"databricks://token:{token}@{host}?http_path={http_path}"
+    if catalog:
+        url += f"&catalog={catalog}"
+    if schema:
+        url += f"&schema={schema}"
+
     return create_engine(url)
 
 

@@ -14,7 +14,7 @@ warehouses cuando arme queries (que era el gap real del toolkit).
 from __future__ import annotations
 
 
-DIALECTS = ("snowflake", "bigquery", "redshift")
+DIALECTS = ("snowflake", "bigquery", "redshift", "databricks")
 
 
 def dialect_for(warehouse_type: str) -> str:
@@ -33,15 +33,16 @@ def dialect_for(warehouse_type: str) -> str:
 def date_trunc(part: str, column: str, warehouse_type: str) -> str:
     """Trunca una columna de fecha a la parte pedida (month/day/year/hour).
 
-    Snowflake: DATE_TRUNC('month', col)
-    BigQuery:  DATE_TRUNC(col, MONTH)
-    Redshift:  DATE_TRUNC('month', col)
+    Snowflake:   DATE_TRUNC('month', col)
+    BigQuery:    DATE_TRUNC(col, MONTH)
+    Redshift:    DATE_TRUNC('month', col)
+    Databricks:  DATE_TRUNC('month', col)
     """
     wh = dialect_for(warehouse_type)
     if wh == "bigquery":
         # BigQuery usa MONTH/DAY/YEAR/HOUR sin comillas
         return f"DATE_TRUNC({column}, {part.upper()})"
-    # Snowflake y Redshift usan la misma firma
+    # Snowflake, Redshift y Databricks usan la misma firma con string literal
     return f"DATE_TRUNC('{part.lower()}', {column})"
 
 
@@ -50,9 +51,7 @@ def current_timestamp(warehouse_type: str) -> str:
     wh = dialect_for(warehouse_type)
     if wh == "redshift":
         return "GETDATE()"
-    if wh == "bigquery":
-        return "CURRENT_TIMESTAMP()"
-    return "CURRENT_TIMESTAMP()"  # Snowflake
+    return "CURRENT_TIMESTAMP()"  # Snowflake, BigQuery, Databricks
 
 
 # ---- Type cast --------------------------------------------------------------
@@ -61,7 +60,7 @@ def safe_cast(expression: str, target_type: str, warehouse_type: str) -> str:
     """Type-cast seguro (devuelve NULL en caso de error).
 
     BigQuery: SAFE_CAST(expr AS target)
-    Snowflake/Redshift: TRY_CAST(expr AS target)
+    Snowflake/Redshift/Databricks: TRY_CAST(expr AS target)
     """
     wh = dialect_for(warehouse_type)
     if wh == "bigquery":
@@ -75,14 +74,14 @@ def conditional(condition: str, when_true: str, when_false: str,
                 warehouse_type: str) -> str:
     """Funcion condicional ternaria.
 
-    Snowflake: IFF(cond, a, b)
-    BigQuery:  IF(cond, a, b)
-    Redshift:  CASE WHEN cond THEN a ELSE b END
+    Snowflake:             IFF(cond, a, b)
+    BigQuery/Databricks:   IF(cond, a, b)
+    Redshift:              CASE WHEN cond THEN a ELSE b END
     """
     wh = dialect_for(warehouse_type)
     if wh == "snowflake":
         return f"IFF({condition}, {when_true}, {when_false})"
-    if wh == "bigquery":
+    if wh in ("bigquery", "databricks"):
         return f"IF({condition}, {when_true}, {when_false})"
     return f"CASE WHEN {condition} THEN {when_true} ELSE {when_false} END"
 

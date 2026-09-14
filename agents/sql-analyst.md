@@ -47,7 +47,7 @@ Invocar este agente cuando el pedido matchee con alguno de:
 ## Flujo de trabajo
 
 1. **Cargar skills** (en orden según el motor y objetivo):
-   - Si la fuente es un cloud warehouse (Snowflake, BigQuery, Redshift):
+   - Si la fuente es un cloud warehouse o lakehouse (Snowflake, BigQuery, Redshift, Databricks):
      cargar `sql-cloud-warehouse` PRIMERO (conexión dialecto-aware, helpers de tipos)
      → `schema-mapper` → `sql-query-helper` → `query-validation`.
    - Si la fuente es relacional estándar (SQLite, Postgres, MySQL, DuckDB):
