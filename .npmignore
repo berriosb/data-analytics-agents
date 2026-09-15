@@ -42,10 +42,13 @@ venv/
 node_modules/
 
 # Tests internos que no deben ir a npm (los ejemplos sí)
-tests/
+# (los tests unitarios SI van al package — son parte del toolkit
+# para que el usuario pueda correr `make test-unit` despues de
+# instalar via npm)
+# tests/
 
-# Documentos internos de desarrollo
-CHANGELOG.md
+# Documentos internos de desarrollo (CHANGELOG.md SI va al package —
+# es la fuente de verdad de release notes para el usuario final)
 TODO.md
 NOTES.md
 *.bak

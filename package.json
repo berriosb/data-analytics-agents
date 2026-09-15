@@ -16,6 +16,7 @@
     ".github",
     "README.md",
     "AGENTS.md",
+    "CHANGELOG.md",
     "Makefile",
     "LICENSE",
     "requirements-dev.txt",
