@@ -1,6 +1,7 @@
 # PRD — `sql-cloud-warehouse`
 
-- **Status:** Draft → Ready para implementar tras ADR-001 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.4.0 (Snowflake/BigQuery/Redshift); v0.9.0 added Databricks (Spark SQL). Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [001-portable-day1](../adr/001-portable-day1.md)
 - **Skills relacionadas:** `sql-analyst` (carga esta antes), `schema-mapper`, `sql-query-helper`, `query-validation`

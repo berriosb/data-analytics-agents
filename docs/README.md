@@ -4,6 +4,9 @@ Documentación de diseño del toolkit `data-analytics-agents`.
 
 ## Estructura
 
+- `architecture.md` — Vista de alto nivel: las 5 personas, las 20 skills,
+  flujo de triaje, handoffs entre agentes, y cómo los agentes referencian
+  skills. **Leelo primero** si es tu primera vez en el repo.
 - `adr/` — Architecture Decision Records. Decisiones de arquitectura
   transversales al toolkit (no por skill individual).
 - `prd/` — Product Requirements Documents. Una página por skill o
@@ -23,6 +26,11 @@ Documentación de diseño del toolkit `data-analytics-agents`.
   el código vive en `skills/<name>/` y `agents/<name>.md`.
 
 ## Índice actual
+
+### Arquitectura
+
+- [architecture.md](architecture.md) — Mapa de las 5 personas y las 20
+  skills, con diagramas de triaje + handoffs.
 
 ### ADRs
 

@@ -1,6 +1,7 @@
 # PRD — `excel-formulas`
 
-- **Status:** Draft → Ready para implementar tras ADR-002 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.6.0. Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [002-end-to-end-delivery](../adr/002-end-to-end-delivery.md)
 - **Skills relacionadas:** `excel-profiler` (base), `data-explorer` (carga esta solo si el usuario pide auditar fórmulas)

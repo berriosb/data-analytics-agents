@@ -1,6 +1,7 @@
 # PRD — `audit-log`
 
-- **Status:** Draft → Ready para implementar tras ADR-002 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.8.0. Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [002-end-to-end-delivery](../adr/002-end-to-end-delivery.md)
 - **Skills relacionadas:** `sql-cloud-warehouse`, `sql-write`, `sql-analyst`, `audit-log` (transversal: lo carga cualquier skill que toque una DB)

@@ -1,6 +1,7 @@
 # PRD — `api-builder`
 
-- **Status:** Draft → Ready para implementar tras ADR-002 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.5.0. Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [002-end-to-end-delivery](../adr/002-end-to-end-delivery.md)
 - **Skills relacionadas:** `reporting-analyst` (carga esta opcional al final), `viz-patterns`, `insight-synthesis`, `report-export`

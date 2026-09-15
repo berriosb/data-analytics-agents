@@ -42,6 +42,15 @@ como contexto.
 > | Codex | `.agents/skills/<name>` (Codex lee los agentes desde AGENTS.md) |
 > | Antigravity | plugin staged en `~/.gemini/antigravity-cli/plugins/` |
 
+## Mapa de la arquitectura
+
+Para el mapa mental de cómo se conectan las 5 personas y las 20 skills,
+el flujo de triaje y los handoffs entre especialistas, ver
+[`docs/architecture.md`](docs/architecture.md). **Leelo si es tu
+primera vez en el repo o si vas a proponer un cambio que toca más
+de una skill** — el resto de la documentación (ADRs, PRDs, este
+archivo) asume que entendés ese mapa.
+
 ## Por qué este archivo solo no alcanza
 
 `AGENTS.md` se carga como **contexto** por cada CLI desde el cwd — así que el

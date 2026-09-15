@@ -1,6 +1,7 @@
 # PRD — `sql-write`
 
-- **Status:** Draft → Ready para implementar tras ADR-002 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.7.0. Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [002-end-to-end-delivery](../adr/002-end-to-end-delivery.md)
 - **Skills relacionadas:** `sql-analyst` (carga esta solo si el usuario pide escribir), `audit-log` (cuando esté), `schema-mapper`, `query-validation`

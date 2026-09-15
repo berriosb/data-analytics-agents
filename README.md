@@ -59,6 +59,20 @@ data-analytics/
 └── README.md                   # este archivo
 ```
 
+## Documentación adicional
+
+- [`docs/architecture.md`](docs/architecture.md) — mapa mental de las
+  5 personas + 20 skills: triaje, handoffs entre agentes, y grafo
+  de qué skill carga cada agente. **Leer primero** si vas a
+  contribuir.
+- [`docs/adr/`](docs/) — Architecture Decision Records (2 ADRs
+  cubren v0.3.0–v0.9.0).
+- [`docs/prd/`](docs/) — Product Requirements Documents de las 7
+  skills complejas (api-builder, audit-log, excel-formulas,
+  excel-profiler, report-export, sql-cloud-warehouse, sql-write).
+- [`CHANGELOG.md`](CHANGELOG.md) — qué cambió en cada versión y los
+  criterios para v1.0.
+
 ## Inicio rápido
 
 ### Vía npm (recomendada — agents + skills)

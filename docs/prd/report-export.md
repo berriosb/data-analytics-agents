@@ -1,6 +1,7 @@
 # PRD — `report-export`
 
-- **Status:** Draft → Ready para implementar tras ADR-001 aceptado
+- **Status:** Accepted (2026-09-15)
+- **Implementation:** shipped at v0.3.0. Ver [CHANGELOG.md](../../CHANGELOG.md).
 - **Owner:** CodeHak (Bastian)
 - **ADR relacionado:** [001-portable-day1](../adr/001-portable-day1.md)
 - **Skills relacionadas:** `reporting-analyst` (carga esta al final), `viz-patterns`, `insight-synthesis`
