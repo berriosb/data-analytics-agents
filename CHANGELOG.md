@@ -25,11 +25,16 @@ Criterios para promover v0.9.x a v1.0.0 (cuando estén todos marcados):
       y al `make test` global. Pendiente: extender a los 14 skills
       sin `recetas/` (requiere extraer snippets de markdown a código
       importable, ADR aparte).
-- [ ] **Review del dialecto Databricks (Spark SQL)** recién agregado en
+- [x] **Review del dialecto Databricks (Spark SQL)** recién agregado en
       v0.9.0. Validar cobertura offline (snippets de
       `DATE_TRUNC`, `IFF`, `TRY_CAST`, window functions con
       `BETWEEN ... AND ...` vs `ROWS BETWEEN`) y gaps reales contra
-      Postgres/Snowflake.
+      Postgres/Snowflake. _Status:_ completado en este pase. Review
+      detallada en [`docs/notes/databricks-coverage.md`](docs/notes/databricks-coverage.md).
+      Cambios concretos: snippet nuevo `identifier_quote()` (cierra
+      G4) + 6 tests. Gaps intencionalmente NO cerrados (PIVOT,
+      STRING_AGG, date_add) por divergencia real entre dialectos;
+      documentados para implementacion bajo demanda.
 - [x] **CHANGELOG.md y PRDs al día** (este doc + flip de los 7 PRDs a
       Accepted). _Status:_ done en este pase.
 - [x] **`docs/architecture.md` cross-linked** desde `AGENTS.md` y

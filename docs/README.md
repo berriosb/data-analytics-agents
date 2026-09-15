@@ -12,6 +12,9 @@ Documentación de diseño del toolkit `data-analytics-agents`.
 - `prd/` — Product Requirements Documents. Una página por skill o
   feature nueva, con user story, scope in/out, workflow, recetas y
   criterios de "listo".
+- `notes/` — Reviews técnicas y análisis one-off (ej. cobertura de
+  dialectos, performance, etc.). No son specs — son observaciones
+  que pueden devenir en ADRs o PRDs.
 
 ## Convención
 
@@ -45,3 +48,9 @@ Documentación de diseño del toolkit `data-analytics-agents`.
   Snowflake, BigQuery, Redshift.
 - [report-export](prd/report-export.md) — Export de reportes a PDF,
   PPT y HTML standalone.
+
+### Notes
+
+- [databricks-coverage](notes/databricks-coverage.md) — Review del
+  dialecto Databricks (Spark SQL) agregado en v0.9.0. Cobertura
+  actual + gaps + recomendaciones.

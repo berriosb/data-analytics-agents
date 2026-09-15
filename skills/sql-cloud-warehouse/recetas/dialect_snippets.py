@@ -97,3 +97,29 @@ def top_n(limit: int, warehouse_type: str) -> str:
     if limit <= 0:
         raise ValueError(f"top_n: limit debe ser > 0, recibio {limit}")
     return f"LIMIT {int(limit)}"
+
+
+# ---- Identifier quoting -----------------------------------------------------
+
+def identifier_quote(name: str, warehouse_type: str) -> str:
+    """Devuelve un identificador entrecomillado segun el dialecto.
+
+    Snowflake / Redshift: comillas dobles (ANSI SQL, case-sensitive).
+    BigQuery / Databricks: backticks (estilo MySQL/Spark).
+
+    Usar SIEMPRE que el nombre venga del schema introspectado o de
+    input del usuario, para evitar SQL injection y para que
+    identificadores con caracteres especiales (guion, espacio) no
+    rompan la query.
+
+    Args:
+        name: el identificador crudo (sin comillas).
+        warehouse_type: uno de los dialectos soportados.
+
+    Returns:
+        El identificador entrecomillado listo para interpolar en la query.
+    """
+    wh = dialect_for(warehouse_type)
+    if wh in ("bigquery", "databricks"):
+        return f"`{name}`"
+    return f'"{name}"'

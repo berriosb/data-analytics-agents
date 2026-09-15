@@ -159,3 +159,35 @@ class TestDialectFor:
     def test_empty_string_raises(self) -> None:
         with pytest.raises(ValueError):
             scw.dialect_for("")
+
+
+# -----------------------------------------------------------------------
+# identifier_quote — backticks vs comillas dobles segun dialecto
+# -----------------------------------------------------------------------
+
+class TestIdentifierQuote:
+
+    @pytest.mark.parametrize("warehouse", ["snowflake", "redshift"])
+    def test_uses_double_quotes_for_ansi_dialects(self, warehouse: str) -> None:
+        """Snowflake y Redshift usan comillas dobles (ANSI SQL)."""
+        assert scw.identifier_quote("customer_id", warehouse) == '"customer_id"'
+
+    @pytest.mark.parametrize("warehouse", ["bigquery", "databricks"])
+    def test_uses_backticks_for_mysql_style_dialects(self, warehouse: str) -> None:
+        """BigQuery y Databricks usan backticks (estilo MySQL/Spark)."""
+        assert scw.identifier_quote("customer_id", warehouse) == "`customer_id`"
+
+    def test_preserves_special_chars_in_name(self) -> None:
+        """Nombres con guion, espacio o punto se entrecomillan tal cual.
+
+        El escape interno NO se hace aca — es responsabilidad del caller.
+        """
+        assert scw.identifier_quote("my-table", "bigquery") == "`my-table`"
+        assert scw.identifier_quote("my table", "snowflake") == '"my table"'
+        assert scw.identifier_quote("schema.table", "databricks") == "`schema.table`"
+
+    def test_unsupported_warehouse_raises(self) -> None:
+        """Mismo comportamiento que el resto: warehouse desconocido falla explicito."""
+        with pytest.raises(ValueError) as exc:
+            scw.identifier_quote("foo", "oracle")
+        assert "oracle" in str(exc.value).lower()
