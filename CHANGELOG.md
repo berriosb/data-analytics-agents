@@ -7,55 +7,59 @@ cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
 ## [Unreleased]
 
-### Planeado para v1.0.0
+Sin cambios pendientes. El plan para v1.x vive en "Out of scope para
+v1.0" debajo.
 
-Criterios para promover v0.9.x a v1.0.0 (cuando estén todos marcados):
+## [1.0.0] — 2026-09-15
 
-- [x] **Unit tests sobre snippets de skills** (no solo smoke tests de
-      examples). Hoy los `make test-*` validan que los examples corren
-      end-to-end; no testean los snippets pre-aprobados en
-      `skills/<name>/SKILL.md` ni los edge cases que cubren (e.g.
-      `pandas-cleaning` con dtype mixto, `feature-engineering` con
-      target desbalanceado). Esto bloquea confianza en upgrades.
-      _Status (2026-09-15):_ suite inicial con **155 tests** sobre los
-      6 skills con módulo `recetas/` (api-builder, audit-log,
-      excel-formulas, report-export, sql-cloud-warehouse, sql-write).
-      Cubre happy path + edge cases + seguridad (PII redaction, SQL
-      blockers, dialect-aware snippets). Wired via `make test-unit`
-      y al `make test` global. Pendiente: extender a los 14 skills
-      sin `recetas/` (requiere extraer snippets de markdown a código
-      importable, ADR aparte).
-- [x] **Review del dialecto Databricks (Spark SQL)** recién agregado en
-      v0.9.0. Validar cobertura offline (snippets de
-      `DATE_TRUNC`, `IFF`, `TRY_CAST`, window functions con
-      `BETWEEN ... AND ...` vs `ROWS BETWEEN`) y gaps reales contra
-      Postgres/Snowflake. _Status:_ completado en este pase. Review
-      detallada en [`docs/notes/databricks-coverage.md`](docs/notes/databricks-coverage.md).
-      Cambios concretos: snippet nuevo `identifier_quote()` (cierra
-      G4) + 6 tests. Gaps intencionalmente NO cerrados (PIVOT,
-      STRING_AGG, date_add) por divergencia real entre dialectos;
-      documentados para implementacion bajo demanda.
-- [x] **CHANGELOG.md y PRDs al día** (este doc + flip de los 7 PRDs a
-      Accepted). _Status:_ done en este pase.
-- [x] **`docs/architecture.md` cross-linked** desde `AGENTS.md` y
-      `README.md`. _Status:_ done en este pase.
+Primer release estable (GA). Cierra el ciclo de release acumulado
+desde v0.3.0 con foco en confianza, documentación y cobertura de tests.
 
-### Out of scope para v1.0 (planeado para v1.x)
+### Added
 
-- `data-engineer` (ingesta APIs / S3 / scraping). ADR-003 cuando haya
-  demanda concreta. Es **más grande** que las 3 skills de v0.4.0 juntas
-  (rate limiting, OAuth, retries) y amerita su propio pase.
-- `make doctor` (preflight de Node, Python y peer-deps opcionales).
-  Hoy `make list` muestra estado de instalación; `make doctor`
-  agregaría verificación de versiones y depeer-deps que el usuario
-  tiene cargados.
-- AutoML / hyperparameter search. Fuera de alcance de `ml-modeler`
-  (mencionado en [README](README.md) sección "Fuera de alcance").
-- Modo "full" de `sql-write` (DROP/UPDATE/DELETE con rollback script).
-  El modo conservador cubre el 90% del caso; el resto necesita
-  audit log + dry-run + transactional DDL que es otro ADR.
-- Soporte OAuth2 / service accounts para `sql-cloud-warehouse`. Hoy
-  son credenciales estáticas en env.
+- **`docs/architecture.md`** — mapa mental de las 5 personas + 20 skills,
+  con diagramas Mermaid de triaje/handoffs y grafo de referencia de
+  skills. Cross-linked desde `AGENTS.md` y `README.md`.
+- **`CHANGELOG.md`** — release notes estructuradas (formato
+  Keep a Changelog + SemVer) con roadmap a v1.0 marcado al dia.
+- **Unit tests sobre snippets de skills** (`make test-unit`) — 161 tests
+  cubriendo los 6 skills con módulo `recetas/` (api-builder, audit-log,
+  excel-formulas, report-export, sql-cloud-warehouse, sql-write). Happy
+  path + edge cases + guardrails de seguridad (PII redaction, SQL
+  blockers, dialecto-aware snippets).
+- **`identifier_quote()` snippet** en `sql-cloud-warehouse` — devuelve
+  identificadores entrecomillados segun dialecto (backticks para
+  BigQuery/Databricks, comillas dobles para Snowflake/Redshift). Cierra
+  el gap G4 del review de Databricks.
+- **`docs/notes/databricks-coverage.md`** — review técnico del dialecto
+  Databricks (Spark SQL) con inventario de cobertura + 7 gaps
+  identificados + recomendaciones priorizadas.
+
+### Changed
+
+- **PRDs flippeados a Accepted** — los 7 PRDs (`api-builder`,
+  `audit-log`, `excel-formulas`, `excel-profiler`, `report-export`,
+  `sql-cloud-warehouse`, `sql-write`) pasaron de `Draft → Ready` a
+  `Accepted (2026-09-15)`. Las skills existían y los ADRs estaban
+  aceptados; el flip refleja el estado real.
+- **`audit-log/redact.py`** — `credit_card` se matchea antes que
+  `phone_cl`. Antes, un PAN de 16 dígitos terminaba redactado
+  parcialmente como teléfono porque `phone_cl` ganaba primero y rompía
+  el match completo del PAN. Ahora el PAN se redacta entero.
+- **`sql-write/validate.py`** — `validate_sql` ahora detecta "SQL con
+  solo comentarios" como vacío (`(False, "SQL sin contenido (solo
+  comentarios)")`). Antes pasaba como válido silenciosamente porque el
+  comment-stripping estaba dentro de `_validate_statement` que
+  retornaba sin error.
+
+### Documentation
+
+- Cross-link de `docs/architecture.md` desde `AGENTS.md` (nueva
+  sección "Mapa de la arquitectura") y desde `README.md` (nueva
+  sección "Documentación adicional").
+- `docs/README.md` agrega índice de arquitectura y sección de notes.
+- README reorganiza la sección de "Tests" para distinguir smoke
+  vs unit tests.
 
 ## [0.9.0] — 2026-09-14
 
@@ -151,14 +155,13 @@ Criterios para promover v0.9.x a v1.0.0 (cuando estén todos marcados):
 
 ## Notas de versionado
 
-- **Minor (0.x.0)** cuando se agrega una skill nueva o un agente
+- **Minor (1.x.0)** cuando se agrega una skill nueva o un agente
   nuevo, o cuando cambia la forma de orquestación entre agentes.
-- **Patch (0.x.y)** cuando se arregla un bug, se mejora un snippet
+- **Patch (1.x.y)** cuando se arregla un bug, se mejora un snippet
   pre-aprobado, o se sincroniza documentación.
 - **Major (x.0.0)** reservado para cambios incompatibles en el
   frontmatter de las skills o en el contrato del instalador
-  (`bin/install.js`). El primer major será v1.0.0 cuando los
-  criterios de arriba estén cumplidos.
+  (`bin/install.js`). El primer major fue v1.0.0.
 
 ## Cómo actualizar
 
@@ -172,3 +175,32 @@ Los symlinks en `.opencode/`, `.claude/` y `.agents/` siguen
 apuntando al mismo `node_modules/data-analytics-agents/`; las
 ediciones y updates se reflejan al instante, no hace falta
 re-instalar.
+
+## Out of scope para v1.0 (planeado para v1.x)
+
+- `data-engineer` (ingesta APIs / S3 / scraping). ADR-003 cuando haya
+  demanda concreta. Es **más grande** que las 3 skills de v0.4.0 juntas
+  (rate limiting, OAuth, retries) y amerita su propio pase.
+- `make doctor` (preflight de Node, Python y peer-deps opcionales).
+  Hoy `make list` muestra estado de instalación; `make doctor`
+  agregaría verificación de versiones y depeer-deps que el usuario
+  tiene cargados.
+- AutoML / hyperparameter search. Fuera de alcance de `ml-modeler`
+  (mencionado en [README](README.md) sección "Fuera de alcance").
+- Modo "full" de `sql-write` (DROP/UPDATE/DELETE con rollback script).
+  El modo conservador cubre el 90% del caso; el resto necesita
+  audit log + dry-run + transactional DDL que es otro ADR.
+- Soporte OAuth2 / service accounts para `sql-cloud-warehouse`. Hoy
+  son credenciales estáticas en env.
+- **QUALIFY clause** snippet para Databricks (gap G2 del review).
+  Bajo esfuerzo (snippet + 2 tests), pero no bloqueante.
+- **PIVOT / STRING_AGG / date_add** snippets. Divergencia real entre
+  dialectos hace que un helper "seguro" no exista — mejor dejarlos
+  como patrones de `sql-query-helper` cuando se necesiten.
+- **Unit tests sobre los 14 skills sin `recetas/`**
+  (csv-profiler, pandas-cleaning, viz-patterns, statistical-testing,
+  time-series-patterns, feature-engineering, ml-modeling,
+  model-evaluation, schema-mapper, sql-query-helper,
+  using-data-analytics-agents, insight-synthesis, query-validation,
+  excel-profiler). Requiere extraer los snippets de markdown a
+  código Python importable (ADR aparte) antes de poder testearlos.

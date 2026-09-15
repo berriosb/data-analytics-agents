@@ -1,7 +1,7 @@
 {
   "name": "data-analytics-agents",
-  "version": "0.9.0",
-  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity). v0.9.0 agrega soporte para Databricks (Spark SQL) en sql-cloud-warehouse.",
+  "version": "1.0.0",
+  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity). v1.0.0 cierra el ciclo de release con unit tests sobre los snippets de skills, review del dialecto Databricks, y documentacion de arquitectura.",
   "type": "module",
   "bin": {
     "data-analytics-agents": "./bin/install.js"

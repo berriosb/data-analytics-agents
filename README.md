@@ -66,7 +66,7 @@ data-analytics/
   de qué skill carga cada agente. **Leer primero** si vas a
   contribuir.
 - [`docs/adr/`](docs/) — Architecture Decision Records (2 ADRs
-  cubren v0.3.0–v0.9.0).
+  cubren v0.3.0–v0.9.0; el release v1.0.0 los cierra).
 - [`docs/prd/`](docs/) — Product Requirements Documents de las 7
   skills complejas (api-builder, audit-log, excel-formulas,
   excel-profiler, report-export, sql-cloud-warehouse, sql-write).
