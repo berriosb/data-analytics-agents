@@ -27,7 +27,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-# Pares (underscore, hyphen) para los 6 skills con `recetas/`.
+# Pares (underscore, hyphen) para los skills con `recetas/`.
 SKILL_NAME_PAIRS: list[tuple[str, str]] = [
     ("sql_write", "sql-write"),
     ("audit_log", "audit-log"),
@@ -35,6 +35,9 @@ SKILL_NAME_PAIRS: list[tuple[str, str]] = [
     ("report_export", "report-export"),
     ("sql_cloud_warehouse", "sql-cloud-warehouse"),
     ("api_builder", "api-builder"),
+    ("csv_profiler", "csv-profiler"),
+    ("viz_patterns", "viz-patterns"),
+    ("statistical_testing", "statistical-testing"),
 ]
 
 
