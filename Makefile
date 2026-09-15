@@ -7,7 +7,7 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test test-csv test-sql test-stats test-ts test-ml test-excel \
+        list skills docs test test-unit test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
         test-sql-cloud-offline test-snowflake test-bigquery test-redshift test-databricks \
         test-api-builder test-excel-formulas test-sql-write test-audit-log \
@@ -17,7 +17,8 @@ TARGET      := $(HOME)
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
 	@echo "Test suite unificado"
-	@echo "  make test                Corre todos los smoke tests offline disponibles"
+	@echo "  make test                Corre todos los smoke tests + unit tests offline disponibles"
+	@echo "  make test-unit           Unit tests sobre snippets de skills (pytest tests/)"
 	@echo ""
 	@echo "Inicio rápido (instalación project-local para cualquier CLI)"
 	@echo "  make install-opencode    Arregla el descubrimiento de OpenCode (registra 4 personas)"
@@ -170,9 +171,13 @@ docs:
 	@echo "  $(PROJECT_DIR)/skills/<name>/SKILL.md — cuerpos detallados de las skills"
 	@echo "  $(PROJECT_DIR)/bin/install.js         — instalador multi-CLI"
 
-test: test-csv test-sql test-stats test-ts test-ml test-excel test-excel-formulas test-export-html test-sql-cloud-offline test-api-builder test-sql-write test-audit-log
+test: test-csv test-sql test-stats test-ts test-ml test-excel test-excel-formulas test-export-html test-sql-cloud-offline test-api-builder test-sql-write test-audit-log test-unit
 	@echo ""
-	@echo "✅ Todos los smoke tests completados exitosamente."
+	@echo "✅ Todos los smoke tests + unit tests completados exitosamente."
+
+test-unit:
+	@echo "Unit tests sobre snippets de skills (pytest tests/)"
+	@python3 -m pytest tests/ -v
 
 test-csv:
 	@echo "Corre los snippets de csv-profiler localmente sobre examples/ventas_sample.csv"

@@ -279,14 +279,15 @@ Todos estos mapean a `node ./bin/install.js install --<cli>`. Ver
 cualquiera de los flags `--agent <name>`. Editá `agents/*.md` o
 `skills/*/SKILL.md` y los cambios toman efecto al instante.
 
-## Smoke tests
+## Tests
 
 ```bash
 make list                    # muestra qué está instalado y dónde
 make skills                  # lista de skills disponibles a nivel usuario
-make test                    # corre TODOS los smoke tests offline disponibles
+make test                    # corre TODOS los smoke + unit tests offline disponibles
+make test-unit               # solo los unit tests (pytest tests/, ~155 tests sobre snippets de skills)
 
-# Tests individuales por componente:
+# Tests individuales por componente (smoke):
 make test-csv                # csv-profiler sobre CSV de muestra
 make test-sql                # consulta básica SQLite de muestra
 make test-stats              # statistical-testing sobre datos sintéticos
@@ -300,6 +301,13 @@ make test-api-builder        # api-builder (generación FastAPI + validación py
 make test-sql-write          # sql-write (guardrails contra queries destructivas)
 make test-audit-log          # audit-log (trazabilidad y redacción de PII)
 ```
+
+Los **smoke tests** validan que los examples en `examples/` corren
+end-to-end. Los **unit tests** (`make test-unit`, en `tests/`) ejercitan
+los snippets pre-aprobados de las skills con módulo `recetas/`
+(api-builder, audit-log, excel-formulas, report-export, sql-cloud-warehouse,
+sql-write) — happy path + edge cases + guardrails de seguridad (PII
+redaction, SQL blockers, dialecto-aware SQL).
 
 ## Limpieza
 

@@ -11,21 +11,29 @@ cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
 Criterios para promover v0.9.x a v1.0.0 (cuando estén todos marcados):
 
-- [ ] **Unit tests sobre snippets de skills** (no solo smoke tests de
+- [x] **Unit tests sobre snippets de skills** (no solo smoke tests de
       examples). Hoy los `make test-*` validan que los examples corren
       end-to-end; no testean los snippets pre-aprobados en
       `skills/<name>/SKILL.md` ni los edge cases que cubren (e.g.
       `pandas-cleaning` con dtype mixto, `feature-engineering` con
       target desbalanceado). Esto bloquea confianza en upgrades.
+      _Status (2026-09-15):_ suite inicial con **155 tests** sobre los
+      6 skills con módulo `recetas/` (api-builder, audit-log,
+      excel-formulas, report-export, sql-cloud-warehouse, sql-write).
+      Cubre happy path + edge cases + seguridad (PII redaction, SQL
+      blockers, dialect-aware snippets). Wired via `make test-unit`
+      y al `make test` global. Pendiente: extender a los 14 skills
+      sin `recetas/` (requiere extraer snippets de markdown a código
+      importable, ADR aparte).
 - [ ] **Review del dialecto Databricks (Spark SQL)** recién agregado en
       v0.9.0. Validar cobertura offline (snippets de
       `DATE_TRUNC`, `IFF`, `TRY_CAST`, window functions con
       `BETWEEN ... AND ...` vs `ROWS BETWEEN`) y gaps reales contra
       Postgres/Snowflake.
-- [ ] **CHANGELOG.md y PRDs al día** (este doc + flip de los 7 PRDs a
-      Accepted).
-- [ ] **`docs/architecture.md` cross-linked** desde `AGENTS.md` y
-      `README.md`.
+- [x] **CHANGELOG.md y PRDs al día** (este doc + flip de los 7 PRDs a
+      Accepted). _Status:_ done en este pase.
+- [x] **`docs/architecture.md` cross-linked** desde `AGENTS.md` y
+      `README.md`. _Status:_ done en este pase.
 
 ### Out of scope para v1.0 (planeado para v1.x)
 

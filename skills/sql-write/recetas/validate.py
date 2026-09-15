@@ -53,9 +53,20 @@ def validate_sql(sql: str) -> tuple[bool, str]:
 
     Raises:
         BlockedOperationError si encuentra una operacion bloqueada.
+        SqlWriteNoAllowedError si la primera keyword no es CREATE/INSERT
+        (ni un WITH seguido de INSERT/CREATE).
     """
     if not sql or not sql.strip():
         return False, "SQL vacio"
+
+    # Quick check: si despues de sacar comentarios no queda nada, es SQL
+    # efectivamente vacio. Sin esto, "-- solo un comentario" pasa al
+    # _validate_statement que devuelve silenciosamente y validate_sql
+    # retorna (True, ''), lo cual es incorrecto.
+    no_comments = re.sub(r"--[^\n]*", "", sql)
+    no_comments = re.sub(r"/\*.*?\*/", "", no_comments, flags=re.DOTALL)
+    if not no_comments.strip():
+        return False, "SQL sin contenido (solo comentarios)"
 
     # Separar statements
     statements = [s.strip() for s in sql.split(";") if s.strip()]

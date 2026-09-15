@@ -32,10 +32,15 @@ DEFAULT_PATTERNS: list[PiiPattern] = [
     PiiPattern("email", r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"),
     # RUT chileno: 1-2 digitos, opcional puntos, 3 digitos, opcional puntos, 3 digitos, guion, 1 digito o K
     PiiPattern("rut_cl", r"\b\d{1,2}\.?\d{3}\.?\d{3}[-][\dkK]\b"),
+    # Tarjeta: 4 grupos de 4 digitos separados por espacio o guion.
+    # IMPORTANTE: va ANTES de phone_cl. Una tarjeta de 16 digitos contiene
+    # subsecuencias que matchean el patron de telefono (8 digitos con espacio);
+    # si phone_cl corre primero, redacciona parcialmente y rompe el match
+    # de credit_card. Ordenar credit_card primero preserva la redaccion
+    # completa del PAN.
+    PiiPattern("credit_card", r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"),
     # Telefono CL: +56 9 XXXX XXXX (con o sin espacios), o 9 XXXX XXXX nacional
     PiiPattern("phone_cl", r"(?:\+?56\s?)?(?:9\s?)?[2-9]\d{3}\s?\d{4}\b"),
-    # Tarjeta: 4 grupos de 4 digitos separados por espacio o guion
-    PiiPattern("credit_card", r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b"),
 ]
 
 _extra_patterns: list[PiiPattern] = []
