@@ -10,6 +10,29 @@ cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 Sin cambios pendientes. El plan para v1.x vive en "Out of scope para
 v1.0" debajo.
 
+## [1.0.1] — 2026-09-15
+
+Patch release: sincronización de documentación + guardrail pre-publish.
+
+### Fixed
+
+- **`AGENTS.md` y `README.md`** — corregido el conteo de "4 personas" → "5
+  personas" en 3 lugares (sección "Inicio rápido", sección "Por qué este
+  archivo solo no alcanza", tabla de CLI en README). El toolkit siempre
+  tuvo 5 personas; el doc arrastraba un número incorrecto desde antes
+  de que se agregara `using-data-analytics-agents`.
+
+### Changed
+
+- **`package.json#description`** — la descripción ahora es concisa y
+  descubrible (qué hace el paquete, cuántos agentes/skills incluye).
+  El contexto de release notes se movió al CHANGELOG (que es donde
+  corresponde).
+- **`package.json#scripts`** — agregado `prepublishOnly`:
+  `node ./bin/install.js list && make test-unit`. Bloquea `npm publish`
+  si los symlinks no están bien o los 161 unit tests fallan. Agregado
+  también `test` y `test:unit` como atajos.
+
 ## [1.0.0] — 2026-09-15
 
 Primer release estable (GA). Cierra el ciclo de release acumulado
@@ -177,6 +200,9 @@ ediciones y updates se reflejan al instante, no hace falta
 re-instalar.
 
 ## Out of scope para v1.0 (planeado para v1.x)
+
+Items **no incluidos en v1.0.1** que se podrán agregar en futuras versiones
+de la serie 1.x:
 
 - `data-engineer` (ingesta APIs / S3 / scraping). ADR-003 cuando haya
   demanda concreta. Es **más grande** que las 3 skills de v0.4.0 juntas

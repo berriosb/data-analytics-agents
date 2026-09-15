@@ -5,7 +5,7 @@ CLI (Agy). Este archivo se auto-descubre en la raíz del proyecto, así que
 cualquier CLI que se lance desde este directorio toma las personas de abajo
 como contexto.
 
-> **Inicio rápido** — para registrar las 4 personas como agentes reales en
+> **Inicio rápido** — para registrar las 5 personas como agentes reales en
 > OpenCode (y como agentes/skills project-local en Claude Code, Codex y Agy),
 > corré estos dos pasos desde el directorio del proyecto de data analytics
 > destino:
@@ -63,7 +63,7 @@ leen `AGENTS.md`.
 `bin/install.js` cierra esa brecha haciendo symlinks de `agents/*.md` y
 `skills/*/` a la ubicación esperada por cada CLI. Sin él:
 
-- OpenCode: solo los 7 agentes default están registrados; las 4 personas
+- OpenCode: solo los 7 agentes default están registrados; las 5 personas
   son invisibles para `opencode agent list` y `--agent <name>`.
 - Claude Code: los agentes se cargan desde `AGENTS.md` pero solo como
   contexto; el `.claude/agents/` project-local queda vacío.

@@ -153,7 +153,7 @@ tienen que estar registrados en la ubicación esperada por cada CLI.
 
 | CLI | Ruta de instalación project-local | Notas |
 |---|---|---|
-| **OpenCode** | `.opencode/agents/<name>.md` + `.opencode/skills/<name>` | Hace que `opencode agent list` muestre las 4 personas |
+| **OpenCode** | `.opencode/agents/<name>.md` + `.opencode/skills/<name>` | Hace que `opencode agent list` muestre las 5 personas |
 | **Claude Code** | `.claude/agents/<name>.md` + `.claude/skills/<name>` | Hace que `claude --agent <name>` funcione |
 | **Codex** | `.agents/skills/<name>` (sin agentes project-local — usa `AGENTS.md`) | Solo skills |
 | **Antigravity CLI** | `~/.gemini/antigravity-cli/plugins/data-analytics-agents/` (siempre global) | Hace que `agy --agent <name>` funcione |

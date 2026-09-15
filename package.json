@@ -1,7 +1,7 @@
 {
   "name": "data-analytics-agents",
-  "version": "1.0.0",
-  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity). v1.0.0 cierra el ciclo de release con unit tests sobre los snippets de skills, review del dialecto Databricks, y documentacion de arquitectura.",
+  "version": "1.0.1",
+  "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity CLI). 5 personas (data-explorer, sql-analyst, reporting-analyst, ml-modeler, using-data-analytics-agents) y 20 skills (csv-profiler, sql-cloud-warehouse, viz-patterns, ml-modeling, etc.) instalables con un solo comando.",
   "type": "module",
   "bin": {
     "data-analytics-agents": "./bin/install.js"
@@ -118,7 +118,10 @@
     "install:codex": "node ./bin/install.js install --codex",
     "install:agy": "node ./bin/install.js install --agy",
     "uninstall": "node ./bin/install.js uninstall",
-    "list": "node ./bin/install.js list"
+    "list": "node ./bin/install.js list",
+    "test:unit": "make test-unit",
+    "test": "make test",
+    "prepublishOnly": "make clean-cache && node ./bin/install.js list && make test-unit"
   },
   "keywords": [
     "agents",
