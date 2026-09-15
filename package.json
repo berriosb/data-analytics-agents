@@ -1,6 +1,6 @@
 {
   "name": "data-analytics-agents",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity CLI). 5 personas (data-explorer, sql-analyst, reporting-analyst, ml-modeler, using-data-analytics-agents) y 20 skills (csv-profiler, sql-cloud-warehouse, viz-patterns, ml-modeling, etc.) instalables con un solo comando.",
   "type": "module",
   "bin": {
@@ -83,7 +83,8 @@
     "uvicorn": "^0.27.0",
     "httpx": "^0.27.0",
     "databricks-sql-connector": "^4.0.0",
-    "databricks-sqlalchemy": "^0.3.0"
+    "databricks-sqlalchemy": "^0.3.0",
+    "databricks-sdk": "^0.20.0"
   },
   "peerDependenciesMeta": {
     "openpyxl": {"optional": true},
@@ -107,7 +108,8 @@
     "uvicorn": {"optional": true},
     "httpx": {"optional": true},
     "databricks-sql-connector": {"optional": true},
-    "databricks-sqlalchemy": {"optional": true}
+    "databricks-sqlalchemy": {"optional": true},
+    "databricks-sdk": {"optional": true}
   },
   "engines": {
     "node": ">=18"

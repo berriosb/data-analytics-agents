@@ -15,7 +15,10 @@ redshift-connector) son peerDeps OPCIONALES. Esta skill falla con mensaje
 accionable si no estan instaladas, NO intenta instalarlas.
 """
 
-from .connect import connect_warehouse, get_engine, test_connection
+from .connect import (
+    connect_warehouse, get_engine, test_connection, detect_auth_method,
+    SUPPORTED,
+)
 from .introspect import introspect_schema
 from .dialect_snippets import (
     date_trunc, safe_cast, conditional, current_timestamp,
@@ -30,6 +33,8 @@ __all__ = [
     "connect_warehouse",
     "get_engine",
     "test_connection",
+    "detect_auth_method",
+    "SUPPORTED",
     "introspect_schema",
     "date_trunc",
     "safe_cast",

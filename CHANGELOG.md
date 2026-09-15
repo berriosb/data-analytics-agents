@@ -10,6 +10,75 @@ cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 Sin cambios pendientes. El plan para v1.x vive en "Out of scope para
 v1.0" debajo.
 
+## [1.1.0] — 2026-09-15
+
+Release menor post-v1.0.1. Agrega OAuth2 / service-principal opcional
+para Snowflake y Databricks (sin romper los flows existentes),
+`make doctor` preflight, `CONTRIBUTING.md`, QUALIFY snippet, y unit
+tests para csv-profiler / viz-patterns / statistical-testing.
+
+### Added
+
+- **OAuth2 / service-principal para `sql-cloud-warehouse`** (ADR-003):
+  - Snowflake OAuth: nuevo auth_method `oauth` via `SNOWFLAKE_OAUTH_TOKEN`
+    (access token externo emitido por IdP corporativo).
+  - Databricks service principal: nuevo auth_method `service_principal`
+    via `DATABRICKS_CLIENT_ID` + `DATABRICKS_CLIENT_SECRET` +
+    `DATABRICKS_OIDC_ENDPOINT` (client credentials flow via
+    `databricks-sdk`, peerDep opcional nuevo).
+  - `detect_auth_method()` auto-detecta: si los vars de OAuth/SP
+    estan seteados usa esos; si no, cae a password/PAT (backward
+    compatible).
+  - `databricks-sdk` agregado como peerDep opcional.
+- **`scripts/doctor.py` (`make doctor`)** — preflight de versiones
+  y peer-deps. Chequea Node >= 18, Python >= 3.10, git, deps core
+  REQUIRED (pandas, numpy, openpyxl, plotly, sqlalchemy), deps
+  OPTIONAL por skill, estructura del repo (AGENTS.md, agents/,
+  skills/, 20 SKILL.md), y smoke test del installer. Output con
+  ANSI colors + hints accionables (`pip install ...`).
+- **`CONTRIBUTING.md`** — guia paso a paso para agregar snippets,
+  skills y agentes. Tipos de contribucion (bug / snippet / skill /
+  agente), estructura del repo, setup local, convenciones, tests,
+  PR review checklist. Cross-linked desde `README.md`.
+- **QUALIFY clause snippet** en `sql-cloud-warehouse.dialect_snippets`
+  — emite `QUALIFY <cond>` para Databricks (Spark SQL 3.2+) y
+  Snowflake (2023+); levanta `UnsupportedQualifyError` con receta
+  de reescritura para BigQuery y Redshift. Cierra el gap G2 del
+  review de Databricks.
+- **Unit tests para 3 skills sin `recetas/`**:
+  - `csv-profiler` — `recetas/normalize.py` (NULL_TOKENS,
+    normalize_nulls, null_count) + `recetas/profile.py`
+    (count_outliers_iqr, numeric_stats, categorical_top,
+    datetime_range, profile_column). 30 tests.
+  - `viz-patterns` — `recetas/chart_selector.py`
+    (recommend_chart_type, validate_pie,
+    validate_bar_x_not_categorical_for_line, orientation_for_labels).
+    19 tests.
+  - `statistical-testing` — `recetas/effect_size.py` (cohen_label,
+    eta_squared_label, cohens_d) + `recetas/tests.py` (t_test_ind,
+    mann_whitney_u, anova_oneway). 30 tests.
+- **`docs/notes/databricks-coverage.md`** (de v1.0.0) — review del
+  dialecto Databricks con cobertura + gaps priorizados.
+
+### Changed
+
+- **`scripts/doctor.py`** — `make doctor` agregado al `Makefile` y al
+  README sección Tests. Sin cambios a `make test`.
+- **`tests/conftest.py`** — `SKILL_NAME_PAIRS` ahora cubre 9 skills
+  (los 6 originales + csv-profiler / viz-patterns /
+  statistical-testing). Aliasing de submodulos hyphen<->underscore
+  funciona para los nuevos.
+
+### Documentation
+
+- **`docs/adr/003-oauth2-cloud-warehouses.md`** — ADR nuevo
+  documentando las decisiones de OAuth (scope por warehouse, stack,
+  dispatch, guardrails, trade-offs).
+- **`CONTRIBUTING.md`** — guia paso a paso para contribuidores
+  (cross-linked desde README).
+
+## [1.0.1] — 2026-09-15
+
 ## [1.0.1] — 2026-09-15
 
 Patch release: sincronización de documentación + guardrail pre-publish.
