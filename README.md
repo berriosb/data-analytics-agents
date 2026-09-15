@@ -8,6 +8,9 @@ Un toolkit multi-CLI de agentes y skills para trabajo de **data analytics** —
 impulsado por un único `AGENTS.md` en la raíz del proyecto, con un
 `bin/install.js` de un comando para registrar agentes project-local.
 
+**¿Querés contribuir?** Mirá [CONTRIBUTING.md](CONTRIBUTING.md) — guia
+paso a paso para agregar snippets, skills y agentes.
+
 OpenCode, Claude Code, Codex y Antigravity CLI (`agy`) auto-descubren todos
 `AGENTS.md` cuando se lanzan desde el directorio del proyecto y levantan
 las cinco personas (`data-explorer`, `sql-analyst`, `reporting-analyst`,
@@ -286,6 +289,7 @@ make list                    # muestra qué está instalado y dónde
 make skills                  # lista de skills disponibles a nivel usuario
 make test                    # corre TODOS los smoke + unit tests offline disponibles
 make test-unit               # solo los unit tests (pytest tests/, ~155 tests sobre snippets de skills)
+make doctor                  # preflight de Node, Python y peer-deps con hints accionables
 
 # Tests individuales por componente (smoke):
 make test-csv                # csv-profiler sobre CSV de muestra

@@ -7,7 +7,7 @@ TARGET      := $(HOME)
         install-opencode install-claude install-codex install-agy install-all install-auto \
         uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
-        list skills docs test test-unit test-csv test-sql test-stats test-ts test-ml test-excel \
+        list skills docs test test-unit doctor test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
         test-sql-cloud-offline test-snowflake test-bigquery test-redshift test-databricks \
         test-api-builder test-excel-formulas test-sql-write test-audit-log \
@@ -19,6 +19,9 @@ TARGET      := $(HOME)
 	@echo "Test suite unificado"
 	@echo "  make test                Corre todos los smoke tests + unit tests offline disponibles"
 	@echo "  make test-unit           Unit tests sobre snippets de skills (pytest tests/)"
+	@echo ""
+	@echo "Preflight"
+	@echo "  make doctor              Chequea Node, Python y peer-deps — accionables para installs faltantes"
 	@echo ""
 	@echo "Inicio rápido (instalación project-local para cualquier CLI)"
 	@echo "  make install-opencode    Arregla el descubrimiento de OpenCode (registra 4 personas)"
@@ -178,6 +181,10 @@ test: test-csv test-sql test-stats test-ts test-ml test-excel test-excel-formula
 test-unit:
 	@echo "Unit tests sobre snippets de skills (pytest tests/)"
 	@python3 -m pytest tests/ -v
+
+doctor:
+	@echo "Preflight: chequea Node, Python y peer-deps para data-analytics-agents"
+	@python3 scripts/doctor.py
 
 test-csv:
 	@echo "Corre los snippets de csv-profiler localmente sobre examples/ventas_sample.csv"

@@ -191,3 +191,38 @@ class TestIdentifierQuote:
         with pytest.raises(ValueError) as exc:
             scw.identifier_quote("foo", "oracle")
         assert "oracle" in str(exc.value).lower()
+
+
+# -----------------------------------------------------------------------
+# qualify_clause — filtrar window functions
+# -----------------------------------------------------------------------
+
+class TestQualifyClause:
+
+    @pytest.mark.parametrize("warehouse", ["databricks", "snowflake"])
+    def test_emits_qualify_for_native_dialects(self, warehouse: str) -> None:
+        """Databricks (Spark SQL 3.2+) y Snowflake (2023+) soportan QUALIFY nativo."""
+        assert scw.qualify_clause("rn = 1", warehouse) == "QUALIFY rn = 1"
+
+    def test_supports_complex_condition(self) -> None:
+        """La condicion puede incluir cualquier predicado, no solo igualdad."""
+        result = scw.qualify_clause("rn <= 5 AND amount > 100", "databricks")
+        assert result == "QUALIFY rn <= 5 AND amount > 100"
+
+    @pytest.mark.parametrize("warehouse", ["bigquery", "redshift"])
+    def test_raises_for_unsupported_dialects(self, warehouse: str) -> None:
+        """BigQuery y Redshift NO soportan QUALIFY — caller debe reescribir."""
+        with pytest.raises(scw.UnsupportedQualifyError) as exc:
+            scw.qualify_clause("rn = 1", warehouse)
+        assert warehouse in str(exc.value)
+        # El mensaje debe incluir la receta de reescritura (subquery)
+        assert "subquery" in str(exc.value).lower()
+
+    def test_unsupported_error_warehouse_attribute(self) -> None:
+        """El error expone el warehouse como atributo (no solo en el mensaje)."""
+        try:
+            scw.qualify_clause("rn = 1", "bigquery")
+        except scw.UnsupportedQualifyError as e:
+            assert e.warehouse == "bigquery"
+        else:
+            pytest.fail("Deberia haber levantado UnsupportedQualifyError")

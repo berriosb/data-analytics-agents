@@ -123,3 +123,44 @@ def identifier_quote(name: str, warehouse_type: str) -> str:
     if wh in ("bigquery", "databricks"):
         return f"`{name}`"
     return f'"{name}"'
+
+
+# ---- QUALIFY (window function filter) ---------------------------------------
+
+def qualify_clause(condition: str, warehouse_type: str) -> str:
+    """Devuelve una clausula QUALIFY para filtrar resultados de window functions.
+
+    QUALIFY filtra el output de una window function sin necesidad de
+    un subquery wrapper — equivalente a WHERE pero aplicado despues
+    del calculo de la window function.
+
+    Soportado nativamente en:
+    - Databricks (Spark SQL 3.2+)
+    - Snowflake (2023+)
+
+    NO soportado en:
+    - BigQuery
+    - Redshift
+
+    Para los dialectos que NO soportan QUALIFY, esta funcion levanta
+    `UnsupportedQualifyError` con la receta de reescritura como
+    subquery. El caller tiene que decidir que hacer (tirar la query,
+    reescribirla, o pedirle al usuario confirmacion).
+
+    Args:
+        condition: la condicion, ej. 'rn = 1' o 'rn <= 5'.
+        warehouse_type: uno de los dialectos soportados.
+
+    Returns:
+        La string 'QUALIFY <condition>' lista para concatenar al final
+        de la query (despues de ORDER BY si existe).
+
+    Raises:
+        UnsupportedQualifyError si el dialecto no soporta QUALIFY.
+    """
+    from .errors import UnsupportedQualifyError
+
+    wh = dialect_for(warehouse_type)
+    if wh in ("databricks", "snowflake"):
+        return f"QUALIFY {condition}"
+    raise UnsupportedQualifyError(wh)

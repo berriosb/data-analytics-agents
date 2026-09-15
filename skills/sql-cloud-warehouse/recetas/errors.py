@@ -27,3 +27,17 @@ class MissingCredentialsError(ValueError):
         super().__init__(msg)
         self.missing = missing
         self.warehouse = warehouse
+
+
+class UnsupportedQualifyError(NotImplementedError):
+    """El dialecto no soporta QUALIFY — el caller debe reescribir como subquery."""
+
+    def __init__(self, warehouse: str):
+        msg = (
+            f"QUALIFY no esta soportado en {warehouse}. "
+            "Reescribir la query como subquery: "
+            "SELECT ... FROM (SELECT ..., ROW_NUMBER() OVER (...) AS rn FROM t) WHERE rn = 1. "
+            "Soporte nativo: Databricks (Spark SQL 3.2+) y Snowflake (2023+)."
+        )
+        super().__init__(msg)
+        self.warehouse = warehouse

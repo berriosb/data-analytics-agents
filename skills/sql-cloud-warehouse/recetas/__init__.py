@@ -19,10 +19,12 @@ from .connect import connect_warehouse, get_engine, test_connection
 from .introspect import introspect_schema
 from .dialect_snippets import (
     date_trunc, safe_cast, conditional, current_timestamp,
-    top_n, identifier_quote, dialect_for, DIALECTS,
+    top_n, identifier_quote, qualify_clause, dialect_for, DIALECTS,
 )
 from .validate import validate_query, explain_query
-from .errors import MissingDependencyError, MissingCredentialsError
+from .errors import (
+    MissingDependencyError, MissingCredentialsError, UnsupportedQualifyError,
+)
 
 __all__ = [
     "connect_warehouse",
@@ -35,10 +37,12 @@ __all__ = [
     "current_timestamp",
     "top_n",
     "identifier_quote",
+    "qualify_clause",
     "dialect_for",
     "DIALECTS",
     "validate_query",
     "explain_query",
     "MissingDependencyError",
     "MissingCredentialsError",
+    "UnsupportedQualifyError",
 ]
