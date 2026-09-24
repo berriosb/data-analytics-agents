@@ -5,7 +5,7 @@ inspirado en [Keep a Changelog](https://keepachangelog.com/) y el versionado
 sigue [SemVer](https://semver.org/). La fuente de verdad para el alcance de
 cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
-## [Unreleased]
+## [1.2.0] — 2026-09-24
 
 Cierra la inconsistencia pre-existente entre el spec transversal del
 audit log y el código de `sql-write`, y explicita el canal Python local
