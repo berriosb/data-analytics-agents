@@ -74,7 +74,11 @@ Ver `todo` list activa. Las 7 tareas mapean 1:1 con los cambios arriba.
 
 ## Evidence (commits)
 
-Pendiente — se completa al cerrar cada tarea.
+- `ff59019 chore(python-bindings): migrate Python deps to pyproject.toml [extras]`
+  (7 files, +589 / -173). Cubre las 7 tareas. Verificado end-to-end:
+  `pip install -e .[dev]` resuelve 30+ deps; `make test-unit` corre
+  276 tests verdes; `node ./bin/install.js list` sigue detectando
+  5 agentes + 20 skills.
 
 ## Risks
 
