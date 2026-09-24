@@ -1,6 +1,6 @@
 {
   "name": "data-analytics-agents",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Toolkit multi-CLI de personas y skills para flujos de trabajo de data analytics (OpenCode, Claude Code, Codex, Antigravity CLI). 5 personas (data-explorer, sql-analyst, reporting-analyst, ml-modeler, using-data-analytics-agents) y 20 skills (csv-profiler, sql-cloud-warehouse, viz-patterns, ml-modeling, etc.) instalables con un solo comando. Bin ESM Node con 0 deps. Las dependencias Python viven en pyproject.toml (extras: dev/excel/sql/cloud/viz/api) como dev-convenience local; pip es opt-in para tests y recipes.",
   "type": "module",
   "bin": {
@@ -19,6 +19,7 @@
     "CHANGELOG.md",
     "Makefile",
     "LICENSE",
+    "pyproject.toml",
     "requirements-dev.txt",
     "examples/api_builder_sample/analysis.py",
     "examples/api_builder_sample/build_demo.py",

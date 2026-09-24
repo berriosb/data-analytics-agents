@@ -41,7 +41,7 @@ only-include = ["pyproject.toml"]
 
 [project]
 name = "data-analytics-agents"
-version = "1.2.0"
+version = "1.2.1"
 description = "Toolkit multi-CLI de personas y skills para flujos de data analytics (distribuido vía npm). Este pyproject.toml es dev-convenience local: deps para tests y recipes."
 readme = "README.md"
 requires-python = ">=3.10"

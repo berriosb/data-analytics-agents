@@ -5,6 +5,21 @@ inspirado en [Keep a Changelog](https://keepachangelog.com/) y el versionado
 sigue [SemVer](https://semver.org/). La fuente de verdad para el alcance de
 cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
+## [1.2.1] — 2026-09-24
+
+### Fixed
+
+- **`pyproject.toml` missing from npm tarball** — Added to
+  `package.json#files[]`. v1.2.0 documented the new `pyproject.toml`
+  under [Added] but the file was not actually included in the npm
+  tarball because `files[]` did not list it. Symptom: users running
+  `npm install --save-dev data-analytics-agents` followed by
+  `pip install -e .[dev]` would fail with "pyproject.toml not found".
+  Fix: list `pyproject.toml` in `files[]` and bump to 1.2.1. No code
+  or behavior change — the v1.2.0 commit (`27496e7`) was never
+  published to npm registry, so this is the first npm release with
+  the new packaging.
+
 ## [1.2.0] — 2026-09-24
 
 Cierra la inconsistencia pre-existente entre el spec transversal del
