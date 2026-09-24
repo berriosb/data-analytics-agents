@@ -165,6 +165,55 @@ Las skills se referencian por nombre y residen en `~/.agents/skills/` una
 vez que corrés `make install-skills` (instalación user-level; algunos CLIs
 también leen de `.agents/skills/` por proyecto).
 
+## Trabajar con las recetas localmente (Python)
+
+El toolkit se distribuye vía npm y los `.md` son el producto que cargan los
+LLMs. Pero las recetas en `skills/<name>/recetas/*.py` son **librería
+Python real** — hay 9 skills con `__init__.py`, tests unitarios (1950 LOC)
+y examples que las importan. Si querés experimentar localmente, leer el
+código de las recetas, o correr los tests, hay un canal Python opt-in:
+
+```bash
+# Una sola vez — instala las deps de tests + examples
+pip install -e .[dev]
+
+# O equivalente (legacy):
+pip install -r requirements-dev.txt
+
+# Extras por dominio de skill (opt-in, solo si los vas a usar):
+pip install -e .[excel]   # openpyxl + xlrd + formulas + xlcalculator
+pip install -e .[cloud]   # drivers Snowflake / BQ / Redshift / Databricks
+pip install -e .[viz]     # plotly + kaleido + python-pptx + weasyprint + pdfkit
+pip install -e .[api]     # fastapi + uvicorn + httpx + pydantic
+pip install -e .[all]     # todo lo anterior
+```
+
+Después:
+
+```bash
+make doctor         # preflight: chequea Node + Python + peer-deps
+make test-unit      # corre los 1950 LOC de tests sobre las recetas
+```
+
+**No se publica a PyPI.** El `pyproject.toml` lleva el classifier
+`Private :: Do Not Upload` explícito; pip solo lo usa como metadata local
+para resolver las deps. El canal de release sigue siendo npm.
+
+Para importar las recetas desde un script Python (fuera de los tests), el
+guion en los nombres de skills es ilegal en Python. Usá el bootstrap:
+
+```python
+import sys
+from pathlib import Path
+sys.path.insert(0, "/ruta/al/repo/data-analytics")
+from skills_loader import bootstrap
+bootstrap()
+
+# A partir de aca, los aliases hyphen <-> underscore coexisten:
+from sql_write import recetas as sw          # alias underscore
+from sql-write import recetas as sw_h        # mismo modulo, alias hyphen
+```
+
 ## Invocar personas (después de `make install-all`)
 
 ```bash

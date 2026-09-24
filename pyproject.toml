@@ -1,0 +1,206 @@
+# pyproject.toml — metadata + optional-dependencies para data-analytics-agents.
+#
+# ⚠️  NO SE PUBLICA A PyPI. Este toolkit se distribuye vía npm
+# (https://www.npmjs.com/package/data-analytics-agents). El bin
+# `data-analytics-agents` es Node ESM (bin/install.js, 0 deps) y los 4 CLIs
+# target (OpenCode, Claude Code, Codex, Antigravity) viven en el ecosistema
+# npm.
+#
+# Este archivo existe para una sola razón: que un dev que clona el repo
+# pueda correr los tests y experimentar con las recetas sin re-armar un
+# entorno. Flujo recomendado:
+#
+#     pip install -e .[dev]       # deps de test + examples
+#     pip install -e .[excel]     # extras por dominio de skill
+#     pip install -e .[cloud]     # drivers cloud (Snowflake/BQ/Redshift/Databricks)
+#     pip install -e .[all]       # todo
+#
+# Después: `make doctor` (preflight) + `make test-unit` (pytest).
+#
+# Los imports de las recetas siguen requiriendo `skills_loader.py`
+# (Python no acepta guiones en nombres de módulos, y los nombres de skills
+# siguen la convención de skills.sh: `sql-write`, `audit-log`, etc.).
+
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+# Hatchling necesita un solo archivo para construir el wheel. Apuntamos
+# solo a `pyproject.toml`: el wheel queda con metadata pura y el archivo
+# pyproject.toml. `pip install -e .` sigue funcionando (hatchling genera
+# un .pth editable que pone el repo en sys.path; las extras se resuelven
+# via metadata).
+#
+# Razón: el toolkit NO es un paquete Python instalable. `skills_loader.py`
+# vive en la raíz (excluido del tarball npm, dev-convenience local) y
+# registra manualmente cada `skills/<hyphen>/` como importable. Hatchling
+# respeta eso sin pelearse mientras haya al menos un archivo en
+# `only-include`.
+[tool.hatch.build.targets.wheel]
+only-include = ["pyproject.toml"]
+
+[project]
+name = "data-analytics-agents"
+version = "1.1.0"
+description = "Toolkit multi-CLI de personas y skills para flujos de data analytics (distribuido vía npm). Este pyproject.toml es dev-convenience local: deps para tests y recipes."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Bastián Berríos", email = "bastian@example.com" },
+]
+keywords = [
+    "data-analytics",
+    "agents",
+    "skills",
+    "csv-profiler",
+    "sql-analyst",
+    "agent-skills",
+    "ai-agents",
+]
+classifiers = [
+    # El marcador clave: PyPI rechaza el upload si ve este classifier.
+    "Private :: Do Not Upload",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Optional dependencies (extras)
+#
+# Cada extra agrupa deps por dominio de skill. Los tests solo necesitan
+# `dev`; las recetas reales se cargan a demanda cuando una skill específica
+# las requiere (ej. el usuario que va contra Snowflake instala `[cloud]`).
+#
+# Esto reemplaza el antiguo `package.json#peerDependencies` que mezclaba
+# todo en un solo bloque y confundía al lector (npm no instala paquetes
+# Python; pip sí).
+# ─────────────────────────────────────────────────────────────────────────────
+
+[project.optional-dependencies]
+
+# Lo que necesita la suite de tests + los examples offline.
+# NO incluye drivers cloud (se mockean con sqlite) ni pdfkit/weasyprint
+# (renderizan nativo, no se cubren en CI).
+dev = [
+    # EDA / pandas-cleaning / csv-profiler / excel-profiler
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+    # statistical-testing / time-series-patterns / ml-modeling
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+    "statsmodels>=0.14.0",
+    # sql-write / sql-cloud-warehouse / schema-mapper
+    "sqlalchemy>=2.0.0",
+    # viz-patterns / report-export
+    "plotly>=5.0.0",
+    "python-pptx>=0.6.0",
+    "kaleido>=1.0.0",
+    "beautifulsoup4>=4.12.0",
+    # api-builder
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+    # test runner
+    "pytest>=7.0.0",
+]
+
+# Excel: openpyxl está en `dev`; xlrd/formulas/xlcalculator son extras.
+excel = [
+    "openpyxl>=3.1.0",
+    "xlrd>=2.0.0",
+    "formulas>=1.2.0",
+    "xlcalculator>=0.5.0",
+]
+
+# SQL local (sql-write, schema-mapper, sql-query-helper).
+# sqlalchemy está en `dev`; este extra es para quien no quiere tests.
+sql = [
+    "sqlalchemy>=2.0.0",
+]
+
+# Drivers cloud para sql-cloud-warehouse. Peer-dep opt-in por warehouse.
+# Pesan ~50MB cada uno; el usuario instala solo el que usa.
+cloud = [
+    "snowflake-connector-python>=3.0.0",
+    "sqlalchemy-bigquery>=1.6.0",
+    "google-cloud-bigquery>=3.3.0",
+    "sqlalchemy-redshift>=0.8.0",
+    "redshift-connector>=2.0.0",
+    "databricks-sql-connector>=4.0.0",
+    "databricks-sqlalchemy>=0.3.0",
+    "databricks-sdk>=0.20.0",
+]
+
+# Viz / report-export. kaleido + plotly ya están en `dev`.
+# weasyprint y pdfkit requieren libs nativas del sistema (cairo/pango
+# para weasyprint, wkhtmltopdf para pdfkit); se documentan como opcionales.
+viz = [
+    "plotly>=5.0.0",
+    "kaleido>=1.0.0",
+    "python-pptx>=0.6.0",
+    "beautifulsoup4>=4.12.0",
+    "weasyprint>=60.0",
+    "pdfkit>=1.0.0",
+]
+
+# api-builder: FastAPI REST a partir de una función de análisis.
+api = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.27.0",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+]
+
+# Atajo: union de todos los extras (sin contar dev).
+all = [
+    "data-analytics-agents[excel,sql,cloud,viz,api]",
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Tool config
+# ─────────────────────────────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+# El loader de skills necesita ejecutarse antes de pytest colecte los tests.
+# conftest.py se encarga (importa bootstrap() de skills_loader).
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-ra",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "examples/*/out/**",
+    "examples/*/charts/**",
+    "examples/*/out_api/**",
+    "examples/*/_audit_temp/**",
+    "__pycache__",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = [
+    "E501",  # line-too-long (las SKILL.md lines pueden ser largas en bloques de código)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B011"]  # asserts en tests están bien
+"examples/**/*.py" = ["E", "F", "I", "W"]  # demos más relajados
