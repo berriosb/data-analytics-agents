@@ -7,8 +7,81 @@ cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
 ## [Unreleased]
 
-Sin cambios pendientes. El plan para v1.x vive en "Out of scope para
-v1.0" debajo.
+Cierra la inconsistencia pre-existente entre el spec transversal del
+audit log y el código de `sql-write`, y explicita el canal Python local
+que antes vivía disperso entre `requirements-dev.txt` y las peerDeps
+mentirosas de `package.json`.
+
+### Added
+
+- **`pyproject.toml`** — Metadata + `[project.optional-dependencies]`
+  para el canal Python local (extras: `dev`, `excel`, `sql`, `cloud`,
+  `viz`, `api`, `all`). Backend `hatchling` con `only-include =
+  ["pyproject.toml"]` para wheel metadata-only. **NO se publica a
+  PyPI** (classifier `Private :: Do Not Upload`). Reemplaza las
+  peerDeps Python que vivían en `package.json` (npm las ignoraba
+  silenciosamente, confundía a contribuidores que esperaban que
+  `npm install` instale pandas). Flujo recomendado: `pip install -e
+  .[dev]` para tests y recipes; `pip install -e .[cloud]` para
+  drivers Snowflake/BQ/Redshift/Databricks; `pip install -e .[all]`
+  para todo.
+- **README — "Trabajar con las recetas localmente (Python)"** —
+  Nueva sección que documenta el flujo `pip install -e .[dev]` + el
+  `skills_loader.py` bootstrap para usar las recetas desde scripts
+  y tests.
+
+### Changed
+
+- **`skills/sql-write/recetas/audit.py`** — Migración del audit log
+  al archivo transversal `~/.agents/audit/events.jsonl` (env var
+  `AUDIT_LOG_DIR`), alineado con la skill `audit-log` (transversal).
+  Antes escribía a `~/.agents/audit/sql-write.log` con env var
+  `SQL_WRITE_AUDIT_DIR`. Rotación `events.jsonl.1..10` (antes
+  `sql-write.log.1..10`). Esquema JSONL ampliado con `actor=None`
+  (filtrado cuando None, pero presente en la spec para uniformidad
+  con `audit-log/backend.py` — un `jq 'select(.engine=="sqlite")'`
+  ahora ve entries de `sql-write` y `audit-log` en el mismo archivo).
+  **Breaking para downstreams**: herramientas que leían `sql-write.log`
+  deben migrar a `events.jsonl`. Las entries nuevas conviven con las
+  de `audit-log`, distinguibles por `action`/`engine`.
+- **`skills_loader.py`** — API pública completa: nuevo `bootstrap()`
+  como entry point único que reune `load_skill_packages()` +
+  `prime_and_alias_submodules()` (antes la lógica vivía duplicada
+  entre este archivo y `tests/conftest.py`). Auto-descubrimiento
+  de pares hyphen↔underscore (el `SKILL_NAME_PAIRS` hardcoded de
+  `conftest.py` se eliminó). Docstring completo explicando por qué
+  existe (Python no acepta guiones en nombres de módulos; los
+  nombres siguen la convención de skills.sh).
+- **`tests/conftest.py`** — Reducido a 31 líneas; llama
+  `skills_loader.bootstrap()` directo. Elimina duplicación de
+  `_bootstrap_skills_loader` y `_prime_and_alias_skill_submodules`.
+- **`package.json`** — `peerDependencies` y `peerDependenciesMeta`
+  vaciados (eran ruido que npm ignoraba). Description actualizada
+  para apuntar a `pyproject.toml`.
+- **`requirements-dev.txt`** — Reorganizado por dominio de skill.
+  Sigue funcionando como shortcut para `pip install -r
+  requirements-dev.txt`, pero la fuente canónica es ahora
+  `pyproject.toml [project.optional-dependencies.dev]`.
+- **`AGENTS.md`** — Reorganización de la tabla de agentes:
+  consolidada la fila `(transversal)` de `audit-log` en cada agente
+  que la carga, marcado `(opcional)` en skills que ya eran opt-in
+  (`statistical-testing`, `time-series-patterns`, `insight-synthesis`),
+  eliminadas filas redundantes de sub-casos (`data-explorer (Excel
+  corporativo sucio)`, `reporting-analyst (export ejecutivo)`).
+  Agregado `excel-profiler` al inicio del flujo de `data-explorer`
+  (coherente con ADR-001).
+
+### Fixed
+
+- **`AGENTS.md`** — Typo markdown `*api-builder*` →
+  `` `api-builder` `` en la fila `reporting-analyst (deploy
+  servicio)`. Un solo asterisco se renderiza como italics; los
+  backticks son consistentes con el resto de la tabla.
+
+### Repository tooling
+
+- **`.gitignore`** — Agregado `.atl/` (estado local de Pi runtime;
+  antes untracked y en riesgo de commit accidental).
 
 ## [1.1.0] — 2026-09-15
 
