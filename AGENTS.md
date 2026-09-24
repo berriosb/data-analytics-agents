@@ -84,17 +84,14 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | Agente | Skills que carga (en orden) |
 |---|---|
 | `using-data-analytics-agents` | (ninguna — triaje puro, sin carga de skills) |
-| `data-explorer` | `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` |
-| `sql-analyst` (local) | `schema-mapper` → `sql-query-helper` → `query-validation` |
+| `data-explorer` | `excel-profiler` (si .xlsx/.xls "sucio") → `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` (opcional) |
+| `sql-analyst` (local) | `schema-mapper` → `sql-query-helper` → `query-validation` → `audit-log` (transversal) |
 | `sql-analyst` (escribir resultados, modo conservador) | `sql-write` (SOLO si el usuario pide persistir; INSERT/CREATE bloqueados, DROP/UPDATE/DELETE rejected) |
-| (transversal) | `audit-log` (lo carga cualquier skill que toque DB: sql-analyst, sql-cloud-warehouse, sql-write) |
-| `sql-analyst` (cloud: Snowflake/BigQuery/Redshift/Databricks) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` |
-| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` → `insight-synthesis` → **`report-export` (AL FINAL)** |
-| `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` |
-| `data-explorer` (Excel corporativo sucio) | `excel-profiler` → `pandas-cleaning` → `csv-profiler` (fallback) |
-| `data-explorer` (auditoria formulas) | `excel-formulas` (SOLO si el usuario pide auditar o ver formulas) |
-| `reporting-analyst` (export ejecutivo) | `viz-patterns` → `insight-synthesis` → `report-export` (PDF / PPTX / HTML) |
-| `reporting-analyst` (deploy servicio) | `viz-patterns` → `insight-synthesis` → **`api-builder` (FastAPI + Dockerfile + tests, OPCIONAL)** |
+| `sql-analyst` (cloud: Snowflake/BigQuery/Redshift/Databricks) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` → `audit-log` (transversal) |
+| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` (opcional) → `insight-synthesis` → `report-export` (al final) |
+| `reporting-analyst` (deploy servicio) | `viz-patterns` → `insight-synthesis` → `api-builder` (OPCIONAL) |
+| `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` (opcional) |
+| `data-explorer` (auditoría formulas) | `excel-formulas` (SOLO si el usuario pide auditar formulas; no por default) |
 
 Esto es intencional, no un descuido:
 

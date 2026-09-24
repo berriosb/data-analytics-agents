@@ -1,6 +1,6 @@
 ---
 name: sql-write
-description: Persiste resultados de analisis en una DB de manera segura (modo conservador). Usar SOLO si el usuario pide escribir/crear tablas — sql-analyst carga esta skill explicitamente con guardrails. Permite CREATE TABLE IF NOT EXISTS, INSERT (con VALUES o SELECT), CREATE INDEX/VIEW. BLOQUEA DROP/UPDATE/DELETE/TRUNCATE/ALTER/GRANT/REVOKE. Dry-run obligatorio, doble confirmacion, audit log append-only JSONL en `~/.agents/audit/sql-write.log`. Soporta SQLite local + Snowflake/BigQuery/Redshift (via sql-cloud-warehouse).
+description: Persiste resultados de analisis en una DB de manera segura (modo conservador). Usar SOLO si el usuario pide escribir/crear tablas — sql-analyst carga esta skill explicitamente con guardrails. Permite CREATE TABLE IF NOT EXISTS, INSERT (con VALUES o SELECT), CREATE INDEX/VIEW. BLOQUEA DROP/UPDATE/DELETE/TRUNCATE/ALTER/GRANT/REVOKE. Dry-run obligatorio, doble confirmacion, audit log append-only JSONL en `~/.agents/audit/events.jsonl` (mismo log transversal que audit-log). Soporta SQLite local + Snowflake/BigQuery/Redshift (via sql-cloud-warehouse).
 ---
 
 # SQL Write (modo conservador)
@@ -98,7 +98,7 @@ from sql_write.recetas import (
     dry_run,                       # -> dict (ddl, preview_rows, n_rows, ...)
     execute_insert,                # -> dict (n_rows, duration_ms, ...)
     audit_log,                     # escribir al JSONL log
-    get_audit_path,                # ~/.agents/audit/sql-write.log
+    get_audit_path,                # ~/.agents/audit/events.jsonl (compat audit-log)
     SqlWriteError, BlockedOperationError,
 )
 ```
@@ -149,8 +149,8 @@ print(result)
 
 ## Audit log
 
-Ubicación: `~/.agents/audit/sql-write.log` (sobrescribible via env var
-`SQL_WRITE_AUDIT_DIR`).
+Ubicación: `~/.agents/audit/events.jsonl` (mismo log que `audit-log`; sobrescribible
+via env var `AUDIT_LOG_DIR`).
 
 Formato: una línea JSON por escritura. Ejemplo:
 ```json
@@ -160,7 +160,7 @@ Formato: una línea JSON por escritura. Ejemplo:
 ```
 
 Rotación automática: cuando el archivo activo supera 1MB, se renombra
-a `sql-write.log.1` (el `.10` más viejo se borra). Append-only: nunca
+a `events.jsonl.1` (el `.10` más viejo se borra). Append-only: nunca
 se borran entries manualmente.
 
 ## Justificaciones comunes

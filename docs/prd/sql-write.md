@@ -109,7 +109,8 @@ Snowflake/BigQuery/Redshift, **sin riesgo de perder datos existentes**.
 - `execute_insert(engine, df, table_name, schema=None) -> dict` — INSERT
   con transacción
 - `audit_log(action, sql, n_rows, duration_ms) -> None` — escribe al
-  log JSON append-only (default `~/.agents/audit/sql-write.log`)
+  log JSON append-only **transversal** (default `~/.agents/audit/events.jsonl`,
+  override por env var `AUDIT_LOG_DIR`; mismo archivo que `audit-log`)
 
 ## Verificación (criterios de "listo")
 

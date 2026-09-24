@@ -1,9 +1,16 @@
 """
 Audit log append-only JSON para sql-write.
 
+El audit log es TRANSVERSAL al toolkit: `sql-write` escribe al mismo
+archivo que la skill `audit-log` (`~/.agents/audit/events.jsonl`),
+para que un `cat events.jsonl | jq` vea entradas uniformes de todas
+las skills que tocan DB (sql-write, sql-cloud-warehouse, sql-analyst).
+
 Cada escritura exitosa o fallida se registra en
-`~/.agents/audit/sql-write.log` con:
+`~/.agents/audit/events.jsonl` (override por env var `AUDIT_LOG_DIR`)
+con:
 - timestamp (ISO 8601 UTC)
+- actor (None para sql-write; la skill no identifica usuario todavia)
 - action ('insert', 'create+insert', 'dry-run', 'rejected')
 - engine (sqlite, snowflake, bigquery, redshift)
 - target (table_name o ruta)
@@ -14,22 +21,28 @@ Cada escritura exitosa o fallida se registra en
 - sql_preview (primeros 200 chars del query)
 
 Append-only: nunca borra entries. Rotacion: archivo nuevo cuando el
-activo supera 1MB (max ~10 archivos historicos).
+activo supera 1MB (max ~10 archivos historicos: `events.jsonl.1` a
+`events.jsonl.10`).
+
+Nota historica: hasta v1.1.0 sql-write escribia a `sql-write.log` con
+env var `SQL_WRITE_AUDIT_DIR`. Esas dos claves ya no funcionan — el
+codigo ahora usa solo `events.jsonl` + `AUDIT_LOG_DIR`. Si un deploy
+viejo dependia del path anterior, hay que migrar manualmente cualquier
+herramienta downstream que lea `sql-write.log`.
 """
 
 from __future__ import annotations
 
 import json
 import os
-import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 
-_AUDIT_DIR = Path(os.environ.get("SQL_WRITE_AUDIT_DIR",
+_AUDIT_DIR = Path(os.environ.get("AUDIT_LOG_DIR",
                                   Path.home() / ".agents" / "audit"))
-_LOG_FILE = _AUDIT_DIR / "sql-write.log"
+_LOG_FILE = _AUDIT_DIR / "events.jsonl"
 _MAX_SIZE_BYTES = 1_000_000  # 1 MB
 _KEEP_FILES = 10
 
@@ -57,6 +70,7 @@ def audit_log(action: str, engine: str, target: str, status: str,
     """
     entry = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "actor": None,  # sql-write no identifica usuario; uniformidad con audit-log
         "action": action,
         "engine": engine,
         "target": target,
@@ -81,14 +95,14 @@ def _rotate_if_needed() -> None:
         return
     if _LOG_FILE.stat().st_size < _MAX_SIZE_BYTES:
         return
-    # Rotar: sql-write.log -> sql-write.log.1 (el mas viejo se borra)
-    oldest = _AUDIT_DIR / f"sql-write.log.{_KEEP_FILES}"
+    # Rotar: events.jsonl -> events.jsonl.1 (el mas viejo se borra)
+    oldest = _AUDIT_DIR / f"events.jsonl.{_KEEP_FILES}"
     if oldest.exists():
         oldest.unlink()
     for i in range(_KEEP_FILES - 1, 0, -1):
-        src = _AUDIT_DIR / f"sql-write.log.{i}"
-        dst = _AUDIT_DIR / f"sql-write.log.{i + 1}"
+        src = _AUDIT_DIR / f"events.jsonl.{i}"
+        dst = _AUDIT_DIR / f"events.jsonl.{i + 1}"
         if src.exists():
-            shutil.move(str(src), str(dst))
-    shutil.move(str(_LOG_FILE), str(_AUDIT_DIR / "sql-write.log.1"))
+            src.replace(dst)
+    _LOG_FILE.replace(_AUDIT_DIR / "events.jsonl.1")
     _LOG_FILE.touch()

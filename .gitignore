@@ -53,3 +53,5 @@ examples/audit_log_sample/_audit_temp/
 
 # API generada por api-builder (se regenera via make test-api-builder).
 examples/api_builder_sample/out_api/
+# Local Pi runtime state
+.atl/
