@@ -389,6 +389,90 @@ UNGROUPED_AGGREGATE
 - `HASH_GROUP_BY` / `HASH_JOIN` → eficiente a cardinalidad media/alta.
 - DuckDB perfila con `PRAGMA enable_profiling;` + `PRAGMA profiling_output`.
 
+### Funnel de conversión paso a paso (drop-off entre etapas)
+
+Patrón analítico para medir la caída de usuarios entre pasos secuenciales (ej. vista de producto → carrito → checkout → compra).
+
+```sql
+WITH user_funnel_steps AS (
+  SELECT
+    user_id,
+    MIN(CASE WHEN event_type = 'view_item' THEN event_time END) AS t_view,
+    MIN(CASE WHEN event_type = 'add_to_cart' THEN event_time END) AS t_cart,
+    MIN(CASE WHEN event_type = 'start_checkout' THEN event_time END) AS t_checkout,
+    MIN(CASE WHEN event_type = 'purchase' THEN event_time END) AS t_purchase
+  FROM events
+  WHERE event_time >= :start_date AND event_time < :end_date
+  GROUP BY user_id
+),
+funnel_counts AS (
+  SELECT
+    COUNT(DISTINCT CASE WHEN t_view IS NOT NULL THEN user_id END) AS step_1_view,
+    COUNT(DISTINCT CASE WHEN t_view IS NOT NULL AND t_cart > t_view THEN user_id END) AS step_2_cart,
+    COUNT(DISTINCT CASE WHEN t_view IS NOT NULL AND t_cart > t_view AND t_checkout > t_cart THEN user_id END) AS step_3_checkout,
+    COUNT(DISTINCT CASE WHEN t_view IS NOT NULL AND t_cart > t_view AND t_checkout > t_cart AND t_purchase > t_checkout THEN user_id END) AS step_4_purchase
+  FROM user_funnel_steps
+)
+SELECT
+  step_1_view,
+  step_2_cart,
+  ROUND(step_2_cart * 100.0 / NULLIF(step_1_view, 0), 2) AS conv_step1_to_2_pct,
+  step_3_checkout,
+  ROUND(step_3_checkout * 100.0 / NULLIF(step_2_cart, 0), 2) AS conv_step2_to_3_pct,
+  step_4_purchase,
+  ROUND(step_4_purchase * 100.0 / NULLIF(step_3_checkout, 0), 2) AS conv_step3_to_4_pct,
+  ROUND(step_4_purchase * 100.0 / NULLIF(step_1_view, 0), 2) AS overall_funnel_conv_pct
+FROM funnel_counts;
+```
+
+### Sessionization — agrupar eventos en sesiones por inactividad (>30 min)
+
+Determina sesiones continuas de navegación mediante `LAG` y suma acumulada de saltos temporales.
+
+```sql
+WITH event_lags AS (
+  SELECT
+    user_id,
+    event_time,
+    event_type,
+    LAG(event_time) OVER (PARTITION BY user_id ORDER BY event_time) AS prev_event_time
+  FROM events
+),
+session_flags AS (
+  SELECT
+    user_id,
+    event_time,
+    event_type,
+    -- Marca 1 si el evento anterior ocurrió hace más de 30 minutos (o es el primer evento)
+    CASE
+      WHEN prev_event_time IS NULL THEN 1
+      -- Para DuckDB / Postgres:
+      WHEN (EXTRACT(EPOCH FROM event_time) - EXTRACT(EPOCH FROM prev_event_time)) > 1800 THEN 1
+      -- Para SQLite:
+      -- WHEN (julianday(event_time) - julianday(prev_event_time)) * 86400 > 1800 THEN 1
+      ELSE 0
+    END AS is_new_session
+  FROM event_lags
+),
+session_assigned AS (
+  SELECT
+    user_id,
+    event_time,
+    event_type,
+    -- Genera un ID secuencial de sesión acumulando las marcas
+    user_id || '_' || SUM(is_new_session) OVER (PARTITION BY user_id ORDER BY event_time ROWS UNBOUNDED PRECEDING) AS session_id
+  FROM session_flags
+)
+SELECT
+  session_id,
+  user_id,
+  MIN(event_time) AS session_start,
+  MAX(event_time) AS session_end,
+  COUNT(*) AS events_in_session,
+  ROUND((EXTRACT(EPOCH FROM MAX(event_time)) - EXTRACT(EPOCH FROM MIN(event_time))) / 60.0, 2) AS duration_minutes
+FROM session_assigned
+GROUP BY session_id, user_id;
+```
 
 ## Lista de verificación de seguridad
 

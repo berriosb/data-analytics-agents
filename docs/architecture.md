@@ -1,7 +1,7 @@
 # Arquitectura del toolkit
 
 > Propósito: vista de alto nivel de cómo se conectan los **5 agentes** y
-> las **20 skills** del toolkit, cómo fluye un pedido desde el usuario
+> las **24 skills** del toolkit, cómo fluye un pedido desde el usuario
 > hasta la entrega, y por qué las skills son top-level (no anidadas en
 > cada agente).
 
@@ -199,7 +199,7 @@ Notas sobre el grafo:
 
 ## 5. Catálogo de skills por propósito
 
-Las 20 skills se agrupan por lo que hacen, no por quién las carga. Esto
+Las 24 skills se agrupan por lo que hacen, no por quién las carga. Esto
 ayuda a encontrar la skill correcta cuando estás diseñando una nueva.
 
 | Propósito | Skills |
@@ -207,10 +207,11 @@ ayuda a encontrar la skill correcta cuando estás diseñando una nueva.
 | **Triaje** | `using-data-analytics-agents` |
 | **Profiling de archivos** | `csv-profiler`, `excel-profiler`, `excel-formulas` |
 | **Limpieza / transformación** | `pandas-cleaning` |
-| **Análisis estadístico** | `statistical-testing`, `time-series-patterns` |
+| **Análisis estadístico / experimentación** | `statistical-testing`, `ab-testing-analysis`, `time-series-patterns` |
+| **Analítica de producto / clientes** | `cohort-retention`, `customer-segmentation` |
 | **Descubrimiento de esquema** | `schema-mapper` |
 | **Escritura de SQL** | `sql-query-helper`, `sql-cloud-warehouse` |
-| **Validación / guardrails** | `query-validation`, `sql-write` |
+| **Validación / guardrails / calidad** | `query-validation`, `sql-write`, `data-quality-contracts` |
 | **Visualización** | `viz-patterns` |
 | **Síntesis** | `insight-synthesis` |
 | **Export / entrega** | `report-export`, `api-builder` |

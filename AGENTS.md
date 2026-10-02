@@ -46,7 +46,7 @@ como contexto.
 
 ## Mapa de la arquitectura
 
-Para el mapa mental de cómo se conectan las 5 personas y las 20 skills,
+Para el mapa mental de cómo se conectan las 5 personas y las 24 skills,
 el flujo de triaje y los handoffs entre especialistas, ver
 [`docs/architecture.md`](docs/architecture.md). **Leelo si es tu
 primera vez en el repo o si vas a proponer un cambio que toca más
@@ -86,11 +86,11 @@ declara qué skills carga en el paso 1 de su `Flujo de trabajo`:
 | Agente | Skills que carga (en orden) |
 |---|---|
 | `using-data-analytics-agents` | (ninguna — triaje puro, sin carga de skills) |
-| `data-explorer` | `excel-profiler` (si .xlsx/.xls "sucio") → `csv-profiler` → `pandas-cleaning` → `statistical-testing` / `time-series-patterns` (opcional) |
+| `data-explorer` | `excel-profiler` (si .xlsx/.xls "sucio") → `csv-profiler` → `pandas-cleaning` → `data-quality-contracts` (opcional) → `statistical-testing` / `time-series-patterns` / `cohort-retention` / `customer-segmentation` (opcional) |
 | `sql-analyst` (local) | `schema-mapper` → `sql-query-helper` → `query-validation` → `audit-log` (transversal) |
 | `sql-analyst` (escribir resultados, modo conservador) | `sql-write` (SOLO si el usuario pide persistir; INSERT/CREATE bloqueados, DROP/UPDATE/DELETE rejected) |
 | `sql-analyst` (cloud: Snowflake/BigQuery/Redshift/Databricks) | `sql-cloud-warehouse` → `schema-mapper` → `sql-query-helper` (dialecto-aware) → `query-validation` → `audit-log` (transversal) |
-| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `time-series-patterns` (opcional) → `insight-synthesis` → `report-export` (al final) |
+| `reporting-analyst` | `viz-patterns` → `statistical-testing` / `ab-testing-analysis` / `time-series-patterns` / `cohort-retention` / `customer-segmentation` (opcional) → `insight-synthesis` → `report-export` (al final) |
 | `reporting-analyst` (deploy servicio) | `viz-patterns` → `insight-synthesis` → `api-builder` (OPCIONAL) |
 | `ml-modeler` | `feature-engineering` → `ml-modeling` → `model-evaluation` → `insight-synthesis` (opcional) |
 | `data-explorer` (auditoría formulas) | `excel-formulas` (SOLO si el usuario pide auditar formulas; no por default) |
@@ -157,7 +157,11 @@ trigger de la `description`.
 | `sql-cloud-warehouse` | Conexión a Snowflake / BigQuery / Redshift / Databricks + snippets dialecto-aware (IFF/IF/CASE, DATE_TRUNC, TRY_CAST/SAFE_CAST) | `skills/sql-cloud-warehouse/SKILL.md` |
 | `viz-patterns` | Selección de tipo de gráfico + recetas Plotly | `skills/viz-patterns/SKILL.md` |
 | `statistical-testing` | Tests estadísticos de EDA (t-test, ANOVA, chi², correlaciones) sobre datos limpios | `skills/statistical-testing/SKILL.md` |
+| `ab-testing-analysis` | Diseño y evaluación rigurosa de experimentos A/B (SRM, sample size, lift con CI 95%, FDR) | `skills/ab-testing-analysis/SKILL.md` |
 | `time-series-patterns` | Análisis de series temporales (resampling, rolling, lags, descomposición, ADF, forecast naive) | `skills/time-series-patterns/SKILL.md` |
+| `cohort-retention` | Análisis de retención de cohortes y decaimiento de churn en el tiempo | `skills/cohort-retention/SKILL.md` |
+| `customer-segmentation` | Segmentación RFM y clustering K-Means con tuning y proyección PCA 2D | `skills/customer-segmentation/SKILL.md` |
+| `data-quality-contracts` | Validación declarativa de reglas de negocio y esquemas sobre datasets limpios | `skills/data-quality-contracts/SKILL.md` |
 | `feature-engineering` | Encoding, escalado, splits, polinomios, balanceo (preprocesamiento para ML) | `skills/feature-engineering/SKILL.md` |
 | `ml-modeling` | Entrenar modelos supervisados sklearn (linear, logistic, tree, RF, GBM, CV) | `skills/ml-modeling/SKILL.md` |
 | `model-evaluation` | Métricas de clasificación/regresión, ROC/PR, matriz de confusión, feature importance, learning curves | `skills/model-evaluation/SKILL.md` |
@@ -327,7 +331,7 @@ Después de esto:
 ## Soporte de Pi (`pi`)
 
 Pi auto-descubre `AGENTS.md` en la raíz del proyecto para contexto de personas y
-las 20 skills en `.agents/skills/` o `~/.agents/skills/` (conforme a la especificación
+las 24 skills en `.agents/skills/` o `~/.agents/skills/` (conforme a la especificación
 Agent Skills).
 
 Para entornos con la extensión de subagentes (`gentle-pi`), `bin/install.js install --pi`

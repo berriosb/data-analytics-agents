@@ -65,7 +65,7 @@ data-analytics/
 ## Documentación adicional
 
 - [`docs/architecture.md`](docs/architecture.md) — mapa mental de las
-  5 personas + 20 skills: triaje, handoffs entre agentes, y grafo
+  5 personas + 24 skills: triaje, handoffs entre agentes, y grafo
   de qué skill carga cada agente. **Leer primero** si vas a
   contribuir.
 - [`docs/adr/`](docs/) — Architecture Decision Records (2 ADRs
@@ -265,7 +265,7 @@ echo "data/" > .gitignore
 npm init -y >/dev/null
 npm install --save-dev data-analytics-agents
 
-# 3. Registrá las 5 personas y las 20 skills en los CLIs que uses
+# 3. Registrá las 5 personas y las 24 skills en los CLIs que uses
 npx data-analytics-agents install --all
 # → crea .opencode/, .claude/, .agents/ con symlinks al toolkit
 

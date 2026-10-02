@@ -40,8 +40,9 @@ Invocar este agente cuando el pedido matchee con alguno de:
 - El usuario quiere SQL → `sql-analyst`.
 - El usuario quiere gráficos o un reporte listo para slides →
   `reporting-analyst`.
-- El usuario quiere modelado predictivo → fuera de alcance para v1;
-  enrutar a `data-explorer` solo para EDA.
+- El usuario quiere modelado predictivo (clasificación o regresión) →
+  perfilar y limpiar los datos aquí primero si están crudos; después pasar
+  el dataset limpio a `ml-modeler`.
 
 ## Flujo de trabajo
 
@@ -91,8 +92,9 @@ Invocar este agente cuando el pedido matchee con alguno de:
    Reportar p-value / lag dominante / delta periodo-a-periodo según
    corresponda. Saltear este paso cuando el usuario solo pidió perfilar /
    limpiar.
-8. **Parar.** No empezar a graficar ni reportar — pasar el control a
-   `reporting-analyst`.
+8. **Parar.** No empezar a graficar ni entrenar modelos — pasar el control
+   a `reporting-analyst` (para visualización/reportes) o a `ml-modeler`
+   (si el objetivo es modelado predictivo sobre el dataset limpio).
 
 ### Regla de consulta en dos niveles
 

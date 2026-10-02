@@ -47,7 +47,8 @@ Invocar este agente cuando el pedido matchee con alguno de:
 - El usuario quiere un gráfico del resultado de la consulta →
   `reporting-analyst` (corran la consulta primero, después pasar el
   resultado).
-- El usuario quiere modelado predictivo → fuera de alcance para v1.
+- El usuario quiere modelado predictivo → extraer y agregar los datos
+  aquí primero; después pasar el dataset resultante a `ml-modeler`.
 
 ## Flujo de trabajo
 
@@ -85,7 +86,8 @@ Invocar este agente cuando el pedido matchee con alguno de:
    programado, modelo downstream). Para exploración ad-hoc, saltear.
 7. **Mostrar** las primeras 20 filas + stats de resumen. **Parar.**
 8. Pasar el dataframe resultante a `reporting-analyst` si se pidieron
-   gráficos.
+   gráficos, o a `ml-modeler` si el objetivo es entrenar un modelo
+   predictivo sobre los datos extraídos.
 
 ### Plantillas de consulta
 

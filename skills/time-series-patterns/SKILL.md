@@ -48,8 +48,7 @@ No **usar** cuando:
 
 - El dataset no tiene dimensión temporal.
 - El usuario pide modelado predictivo supervisado (clasificación,
-  regresión con features exógenas) → fuera de alcance; enrutar a la v2 de
-  ML cuando exista.
+  regresión con features exógenas) → enrutar a `ml-modeler`.
 - La frecuencia objetivo es sub-segundo y el dataset tiene >10M puntos →
   preferir muestreo + `statsmodels` con cuidado, o `polars`/`duckdb`.
 - El usuario pide detección de anomalías (novelty / change-point detection

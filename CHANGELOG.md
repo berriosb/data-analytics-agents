@@ -5,6 +5,22 @@ inspirado en [Keep a Changelog](https://keepachangelog.com/) y el versionado
 sigue [SemVer](https://semver.org/). La fuente de verdad para el alcance de
 cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
+## [1.4.0] — 2026-10-02
+
+### Added
+
+- **Skill `cohort-retention`** — Matriz triangular de retención, decaimiento de churn acumulado y marginal, heatmap Plotly adaptativo y template SQL analítico.
+- **Skill `ab-testing-analysis`** — Metodología de experimentación A/B (cálculo de tamaño muestral, chequeo de Sample Ratio Mismatch / SRM con chi², z-test de proporciones, Welch t-test continuo, Lift con CI 95% y ajuste de multiplicidad FDR).
+- **Skill `customer-segmentation`** — Segmentación analítica no supervisada: RFM scoring en quintiles con mapeo a arquetipos de negocio, K-Means clustering con optimización de $k$ (codo + silhouette), perfilado de clusters y proyección 2D con PCA.
+- **Skill `data-quality-contracts`** — Validación declarativa de reglas de integridad y esquemas tabulares (unicidad, completitud, rangos numéricos, enums, regex y aserciones lógicas) con reporte PASS/FAIL.
+- **Patrones analíticos en `sql-query-helper`** — Recetas para Funnels de Conversión paso a paso (drop-off) y Sessionization por inactividad (>30 min vía `LAG`).
+- **Ampliación del toolkit a 24 skills** — Actualización de catálogo y enlaces multi-CLI para OpenCode, Claude Code, Codex, Antigravity y Pi.
+
+### Fixed
+
+- **Handoffs y exclusiones en `agents/*.md`** — Eliminadas referencias obsoletas a "fuera de alcance para v1" en `data-explorer`, `sql-analyst` y `reporting-analyst`, alineando el flujo hacia `ml-modeler`.
+- **Exclusiones en `statistical-testing` y `time-series-patterns`** — Redirección directa hacia `ml-modeler` eliminando notas provisionales.
+
 ## [1.3.0] — 2026-10-02
 
 ### Added

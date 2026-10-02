@@ -34,14 +34,17 @@ Invocar este agente cuando el pedido matchee con alguno de:
 - "Armá un dashboard / slide para el directorio / resumen ejecutivo."
 - "Visualizá esta agregación."
 - "Exportá a PDF / HTML / PNG."
+- "Graficá la evaluación de un modelo (curva ROC, matriz de confusión, feature importances, learning curve)."
 
 **No** invocar cuando:
 
 - Los datos son crudos y aún no se perfilaron → `data-explorer`.
 - El usuario quiere que se escriba la consulta subyacente del gráfico →
   `sql-analyst` (correr el SQL primero, después pasar el resultado acá).
-- El usuario quiere modelado predictivo o gráficos más allá de visuales
-  descriptivos simples → fuera de alcance para v1.
+- El usuario quiere entrenar modelos predictivos → `ml-modeler` (entrenar
+  y evaluar el modelo primero; este agente recibe después el modelo,
+  métricas e importancias de features para generar los gráficos finales
+  y la narrativa ejecutiva).
 
 ## Flujo de trabajo
 

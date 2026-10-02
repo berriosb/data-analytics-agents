@@ -48,10 +48,10 @@ No **usar** cuando:
 
 - Los datos aún no están limpios → volver a `pandas-cleaning`.
 - El usuario pide modelado predictivo (regresión, clasificación supervisada)
-  → fuera de alcance para v1; enrutar a `data-explorer` solo para EDA.
-- El usuario pide series temporales con autocorrelación → fuera de alcance
-  para esta skill; pedirle al usuario que reformule como comparación entre
-  periodos (sí cubierto) o esperar a `time-series-patterns` (v2).
+  → enrutar a `ml-modeler`.
+- El usuario pide series temporales con autocorrelación (tendencia,
+  estacionalidad, descomposición, estacionariedad) → cargar
+  `time-series-patterns`.
 
 ## Snippets pre-aprobados
 
@@ -455,7 +455,7 @@ def kendall_corr(x, y):  return _corr(x, y, stats.kendalltau, "Kendall tau", par
 | "Con n=500 seguro es normal." | El TLC requiere n≥30 *por grupo*, no total, y solo si la población original no es muy asimétrica. |
 | "Siempre uso t-test." | El t-test asume varianzas iguales (Student) o solo normalidad (Welch); sin chequearlo se viola el supuesto. |
 | "El p-value es 0.049, casi significativo." | Reportar el p-value exacto. El umbral 0.05 es arbitrario; `effect_size` + `n` importan más. |
-| "ANOVA me dice cuál grupo difiere." | ANOVA es omnibus; para post-hoc (Tukey, Bonferroni) hace falta otra skill (fuera de alcance para v1). |
+| "ANOVA me dice cuál grupo difiere." | ANOVA es omnibus; para post-hoc (Tukey, Bonferroni) hace falta otra skill (fuera de alcance en esta skill). |
 | "Chi² sobre cualquier tabla de contingencia." | Sin frecuencias esperadas >=5, chi² no es válido; usar Fisher o agrupar. |
 | "Pearson sirve para cualquier relación." | Pearson mide solo linealidad; Spearman/Kendall cubren relaciones monotónicas no lineales. |
 

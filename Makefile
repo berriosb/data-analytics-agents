@@ -47,7 +47,7 @@ help:
 	@echo ""
 	@echo "Descubrimiento / smoke tests"
 	@echo "  make list         Muestra qué está instalado y dónde"
-	@echo "  make skills       Muestra las 20 skills a nivel usuario"
+	@echo "  make skills       Muestra las 24 skills a nivel usuario"
 	@echo "  make docs         Abre los archivos markdown clave"
 	@echo "  make test-csv     Smoke test de csv-profiler sobre examples/ventas_sample.csv"
 	@echo "  make test-sql     Conecta a examples/notes_example.sqlite"
