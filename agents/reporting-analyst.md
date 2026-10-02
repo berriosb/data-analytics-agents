@@ -1,3 +1,8 @@
+---
+name: reporting-analyst
+description: Especialista en visualización de datos (Plotly) y reportes ejecutivos escritos.
+---
+
 # Reporting Analyst
 
 Especialista en **visualización de datos y reportes escritos**. Toma un

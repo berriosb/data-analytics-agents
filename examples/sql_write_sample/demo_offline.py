@@ -20,16 +20,15 @@ import shutil
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from skills_loader import load_skill_packages
 load_skill_packages("skills")
 
 try:
+    import pandas as pd
     from sqlalchemy import text
-except ImportError:
-    print("  SKIPPED: sqlalchemy no instalada (pip install sqlalchemy)")
+except ImportError as e:
+    print(f"  SKIPPED: {e.name} no instalada (pip install pandas sqlalchemy)")
     sys.exit(0)
 
 from sql_write.recetas import (

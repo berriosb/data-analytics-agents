@@ -24,7 +24,7 @@ Hay tres primitivas. Todo el toolkit se construye combinándolas.
 |---|---|---|
 | **Persona / agente** | `agents/<name>.md` | Define un rol (perspectiva + workflow + señales de alerta). Decide *qué hacer*. |
 | **Skill** | `skills/<name>/SKILL.md` | Define un trabajo acotado con snippets pre-aprobados. Sabe *cómo hacerlo*. |
-| **CLI** | externo (OpenCode / Claude / Codex / Agy) | Carga personas como system prompt y auto-descubre skills por nombre desde frontmatter. |
+| **CLI** | externo (OpenCode / Claude / Codex / Agy / Pi / mcode) | Carga personas como system prompt y auto-descubre skills por nombre desde frontmatter. |
 
 Las dos reglas que sostienen el diseño:
 
@@ -275,8 +275,8 @@ Tres pasos, todos declarativos (no hay código de orquestación):
    data-analytics-agents install --all`). Las trigger phrases del
    frontmatter deciden qué skill se carga bajo demanda.
 
-`bin/install.js` no ejecuta skills — solo crea los symlinks que los 4
-CLIs saben leer. La lógica vive 100% en los `.md`.
+`bin/install.js` no ejecuta skills — solo crea los symlinks que los
+CLIs soportados saben leer. La lógica vive 100% en los `.md`.
 
 ## 8. Out of scope (v1)
 

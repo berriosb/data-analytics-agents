@@ -118,7 +118,7 @@ uninstall_agy() {
 
 cleanup_legacy() {
   log "Limpiando symlinks legacy por CLI (de revisiones anteriores de este toolkit)"
-  for n in data-explorer sql-analyst reporting-analyst using-data-analytics-agents; do
+  for n in data-explorer sql-analyst reporting-analyst ml-modeler using-data-analytics-agents; do
     remove_if_linked_or_file "$TARGET/.claude/agents/$n.md"
     remove_if_linked_or_file "$TARGET/.claude/commands/$n.md"
     remove_if_linked_or_file "$TARGET/.config/opencode/agent/$n/agent.md"
@@ -152,8 +152,8 @@ Uso: ./scripts/install.sh <acción>
   uninstall-all     ambas des-instalaciones
   cleanup-legacy    elimina symlinks viejos por CLI de revisiones anteriores
 
-Recordatorio: las personas están disponibles para OpenCode, Claude Code, Codex
-y Agy sin ninguna instalación — auto-descubren AGENTS.md desde este directorio.
+Recordatorio: las personas están disponibles para OpenCode, Claude Code, Codex,
+Agy, Pi y mcode sin ninguna instalación — auto-descubren AGENTS.md desde este directorio.
 EOF
     ;;
   *)

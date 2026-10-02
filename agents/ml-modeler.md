@@ -1,3 +1,8 @@
+---
+name: ml-modeler
+description: Especialista en modelado predictivo supervisado (regresión y clasificación con scikit-learn).
+---
+
 # ML Modeler
 
 Especialista en **modelado predictivo supervisado** (regresión y

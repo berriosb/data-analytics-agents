@@ -36,7 +36,7 @@ requieren [ADR](#que-es-un-adr) primero.
 ```bash
 git clone https://github.com/berriosb/data-analytics-agents.git
 cd data-analytics-agents
-make install-all   # registra agentes + skills en los 4 CLIs
+make install-all   # registra agentes + skills en los 5 CLIs (OpenCode, Claude, Codex, Agy, Pi)
 make doctor        # chequea Node, Python y peer-deps
 make test          # corre smoke + unit tests (debe pasar)
 ```

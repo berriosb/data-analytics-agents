@@ -38,8 +38,11 @@ jobs:
           test -L .opencode/skills/api-builder
           test -L .claude/agents/data-explorer.md
           test -L .claude/skills/excel-profiler
+          test -L .agents/agents/data-explorer.md
           test -L .agents/skills/csv-profiler
           test -L .agents/skills/audit-log
+          test -L .pi/agents/data-explorer.md
+          test -L .pi/skills/csv-profiler
 
       - name: Uninstall --all
         run: node ./bin/install.js uninstall --all

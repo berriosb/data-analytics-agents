@@ -159,11 +159,13 @@ tienen que estar registrados en la ubicación esperada por cada CLI.
 | **OpenCode** | `.opencode/agents/<name>.md` + `.opencode/skills/<name>` | Hace que `opencode agent list` muestre las 5 personas |
 | **Claude Code** | `.claude/agents/<name>.md` + `.claude/skills/<name>` | Hace que `claude --agent <name>` funcione |
 | **Codex** | `.agents/skills/<name>` (sin agentes project-local — usa `AGENTS.md`) | Solo skills |
-| **Antigravity CLI** | `~/.gemini/antigravity-cli/plugins/data-analytics-agents/` (siempre global) | Hace que `agy --agent <name>` funcione |
+| **Antigravity CLI** | `.agents/agents/<name>.md` + `.agents/skills/<name>` | Hace que `agy agent` y `agy --agent <name>` funcionen |
+| **Pi** | `.pi/agents/<name>.md` + `.pi/skills/<name>` | Hace que subagentes en Pi funcionen; skills vía `.agents/skills/` |
+| **MiniMax Code (`mcode`)** | `.agents/skills/<name>` (sin agentes project-local — usa `AGENTS.md`) | Lee agentes desde `AGENTS.md`, skills vía `.agents/skills/` |
 
-Las skills se referencian por nombre y residen en `~/.agents/skills/` una
-vez que corrés `make install-skills` (instalación user-level; algunos CLIs
-también leen de `.agents/skills/` por proyecto).
+Las skills y agentes se instalan de forma **project-local** (en `.opencode/`,
+`.claude/`, `.agents/`, `.pi/` del proyecto) para no contaminar otros repositorios
+ajenos a data analytics. No se requiere instalación global.
 
 ## Trabajar con las recetas localmente (Python)
 
@@ -230,6 +232,9 @@ claude -m opus --agent reporting-analyst "Tendencia mensual de revenue, salida a
 
 # Antigravity (Agy)
 agy -m gemini-3.6-flash --agent data-explorer "Perfilá examples/ventas_sample.csv."
+
+# MiniMax Code (mcode)
+mcode "act as data-explorer. Perfilá examples/ventas_sample.csv y pará."
 ```
 
 Si no querés correr el instalador, el estilo "act as" funciona en todos los
@@ -308,8 +313,11 @@ make install-claude
 # Solo Codex (solo skills)
 make install-codex
 
-# Solo Agy (plugin)
+# Solo Agy
 make install-agy
+
+# Solo Pi
+make install-pi
 
 # Auto-detectar qué CLIs están instalados e instalar para esos
 make install-auto
@@ -325,7 +333,9 @@ Todos estos mapean a `node ./bin/install.js install --<cli>`. Ver
 | **OpenCode** | ✅ | ✅ | ✅ (en `.opencode/agents/`) | ✅ para `--agent` |
 | **Claude Code** | ✅ | ✅ | ✅ (en `.claude/agents/`) | ✅ para `--agent` |
 | **Codex** | ✅ | ✅ | ❌ (usar `act as <name>` en el prompt) | ✅ para skills |
-| **Antigravity CLI (`agy`)** | ✅ (también `GEMINI.md`) | ✅ (vía plugin después de `make install-agy`) | ✅ (después de `make install-agy`) | ✅ para `--agent` |
+| **Antigravity CLI (`agy`)** | ✅ (también `GEMINI.md`) | ✅ (en `.agents/skills/` o `~/.agents/skills/`) | ✅ (en `.agents/agents/`) | ✅ para `--agent` |
+| **Pi (`pi`)** | ✅ | ✅ (en `.agents/skills/` o `~/.agents/skills/`) | ✅ (en `.pi/agents/`) | ✅ para subagentes |
+| **MiniMax Code (`mcode`)** | ✅ | ✅ (en `.agents/skills/` o `~/.agents/skills/`) | ❌ (usar `act as <name>` en el prompt) | ✅ para skills |
 
 **TL;DR**: Corré `make install-all` una vez por proyecto, después usá
 cualquiera de los flags `--agent <name>`. Editá `agents/*.md` o

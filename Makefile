@@ -4,16 +4,16 @@ SH_INSTALL  := ./scripts/install.sh
 TARGET      := $(HOME)
 
 .PHONY: help \
-        install-opencode install-claude install-codex install-agy install-all install-auto \
-        uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-all \
+        install-opencode install-claude install-codex install-agy install-pi install-all install-auto \
+        uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-pi uninstall-all \
         install-skills uninstall-skills install-sh-agy uninstall-sh-agy cleanup-legacy \
         list skills docs test test-unit doctor test-csv test-sql test-stats test-ts test-ml test-excel \
         test-export-pdf test-export-ppt test-export-html \
         test-sql-cloud-offline test-snowflake test-bigquery test-redshift test-databricks \
         test-api-builder test-excel-formulas test-sql-write test-audit-log \
-        clean-cache publish \
-        help
-        help:
+        clean-cache publish
+
+help:
 	@echo "data-analytics-agents — toolkit multi-CLI de personas"
 	@echo ""
 	@echo "Test suite unificado"
@@ -24,18 +24,20 @@ TARGET      := $(HOME)
 	@echo "  make doctor              Chequea Node, Python y peer-deps — accionables para installs faltantes"
 	@echo ""
 	@echo "Inicio rápido (instalación project-local para cualquier CLI)"
-	@echo "  make install-opencode    Arregla el descubrimiento de OpenCode (registra 4 personas)"
+	@echo "  make install-opencode    Arregla el descubrimiento de OpenCode (registra 5 personas)"
 	@echo "  make install-claude      Project-local: agentes + skills para Claude Code"
 	@echo "  make install-codex       Project-local: skills para Codex"
-	@echo "  make install-agy         Stagea el plugin de Antigravity (user-level, --global)"
-	@echo "  make install-all         Los 4 CLIs a la vez"
+	@echo "  make install-agy         Project-local: agentes + skills para Antigravity (agy)"
+	@echo "  make install-pi          Project-local: agentes + skills para Pi Coding Agent (pi)"
+	@echo "  make install-all         Los 5 CLIs a la vez"
 	@echo "  make install-auto        Solo para los CLIs que estén en el PATH (--auto)"
 	@echo ""
 	@echo "Limpieza"
 	@echo "  make uninstall-opencode  Elimina los symlinks de OpenCode"
 	@echo "  make uninstall-claude    Elimina los symlinks de Claude Code"
 	@echo "  make uninstall-codex     Elimina los symlinks de Codex"
-	@echo "  make uninstall-agy       Elimina el plugin de Agy"
+	@echo "  make uninstall-agy       Elimina los symlinks de Agy"
+	@echo "  make uninstall-pi        Elimina los symlinks de Pi"
 	@echo "  make uninstall-all       Elimina todo"
 	@echo ""
 	@echo "User-level (legacy, vía scripts/install.sh)"
@@ -45,7 +47,7 @@ TARGET      := $(HOME)
 	@echo ""
 	@echo "Descubrimiento / smoke tests"
 	@echo "  make list         Muestra qué está instalado y dónde"
-	@echo "  make skills       Muestra las 13 skills a nivel usuario"
+	@echo "  make skills       Muestra las 20 skills a nivel usuario"
 	@echo "  make docs         Abre los archivos markdown clave"
 	@echo "  make test-csv     Smoke test de csv-profiler sobre examples/ventas_sample.csv"
 	@echo "  make test-sql     Conecta a examples/notes_example.sqlite"
@@ -77,9 +79,12 @@ install-codex:
 	$(INSTALLER) install --codex
 
 install-agy:
-	$(INSTALLER) install --agy --global
+	$(INSTALLER) install --agy
 
-install-all: install-opencode install-claude install-codex install-agy
+install-pi:
+	$(INSTALLER) install --pi
+
+install-all: install-opencode install-claude install-codex install-agy install-pi
 
 install-auto:
 	$(INSTALLER) install --auto
@@ -96,9 +101,12 @@ uninstall-codex:
 	$(INSTALLER) uninstall --codex
 
 uninstall-agy:
-	$(INSTALLER) uninstall --agy --global
+	$(INSTALLER) uninstall --agy
 
-uninstall-all: uninstall-opencode uninstall-claude uninstall-codex uninstall-agy
+uninstall-pi:
+	$(INSTALLER) uninstall --pi
+
+uninstall-all: uninstall-opencode uninstall-claude uninstall-codex uninstall-agy uninstall-pi
 
 # ---- instalaciones user-level legacy (para usuarios sin Node 18+) ------------
 
@@ -120,7 +128,7 @@ cleanup-legacy:
 # ---- descubrimiento --------------------------------------------------------
 
 list:
-	@echo "--- raíz del proyecto (AGENTS.md auto-descubierto por los 4 CLIs) ---"
+	@echo "--- raíz del proyecto (AGENTS.md auto-descubierto por los CLIs) ---"
 	@ls -1 $(PROJECT_DIR)/AGENTS.md
 	@echo ""
 	@echo "--- agents/ (fuente de verdad de las personas) ---"
@@ -129,10 +137,11 @@ list:
 	@echo "--- skills/ (fuente de verdad de las skills) ---"
 	@ls -1 $(PROJECT_DIR)/skills/
 	@echo ""
-	@echo "--- instalaciones project-local (./.opencode, ./.claude, ./.agents) ---"
+	@echo "--- instalaciones project-local (./.opencode, ./.claude, ./.agents, ./.pi) ---"
 	@ls -la $(PROJECT_DIR)/.opencode 2>/dev/null || echo "  (no hay .opencode/ — corré 'make install-opencode')"
 	@ls -la $(PROJECT_DIR)/.claude 2>/dev/null || echo "  (no hay .claude/ — corré 'make install-claude')"
-	@ls -la $(PROJECT_DIR)/.agents 2>/dev/null || echo "  (no hay .agents/ — corré 'make install-codex')"
+	@ls -la $(PROJECT_DIR)/.agents 2>/dev/null || echo "  (no hay .agents/ — corré 'make install-codex' o 'make install-agy')"
+	@ls -la $(PROJECT_DIR)/.pi 2>/dev/null || echo "  (no hay .pi/ — corré 'make install-pi')"
 	@echo ""
 	@echo "--- skills user-level (~/.agents/skills/, compartidas por todos los CLIs) ---"
 	@if [ -d "$(HOME)/.agents/skills" ]; then \

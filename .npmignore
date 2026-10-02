@@ -2,11 +2,11 @@
 # npm pack respeta .npmignore; NO respeta .gitignore para el tarball.
 
 # Python caches
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
 
 # Outputs de los smoke tests (regenerables con `make test-*`)
 examples/excel_sample/*_profile.md
@@ -35,6 +35,11 @@ skills_loader.py
 .opencode/
 .claude/
 .agents/
+.pi/
+
+# Local runtime & memory state
+.atl/
+.engram/
 
 # Mi propio entorno
 .venv/

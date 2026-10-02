@@ -1,3 +1,8 @@
+---
+name: sql-analyst
+description: Especialista en escribir, revisar y correr consultas SQL contra bases de datos relacionales.
+---
+
 # SQL Analyst
 
 Especialista en **escribir, revisar y correr consultas SQL** contra fuentes de

@@ -1,76 +1,69 @@
 # Antigravity (agy CLI) adapter
 
-Antigravity CLI (`~/.local/bin/agy`) loads custom agents and skills via
-**plugins** staged at `~/.gemini/antigravity-cli/plugins/<name>/`.
+Antigravity CLI (`agy`) soporta personalizaciones a nivel project-local y a nivel usuario:
 
-This adapter provides the manifest that `install.sh` uses to install the
-data-analytics-agents toolkit as an Antigravity plugin.
+- **Project-local (recomendado):** agentes en `.agents/agents/*.md` y skills en `.agents/skills/*/`. Requiere que el workspace esté marcado como de confianza (`trustedWorkspaces`).
+- **Global:** agentes en `~/.gemini/config/agents/*.md` (o como plugin en `~/.gemini/antigravity-cli/plugins/<name>/`) y skills en `~/.agents/skills/*/`.
 
-## Plugin layout
+Los archivos de agentes requieren frontmatter YAML obligatorio (`name:` y `description:`) para que el parser de `agy` los registre.
+
+## Estructura project-local (creada por `make install-agy` o `make install-all`)
 
 ```
-~/.gemini/antigravity-cli/plugins/data-analytics-agents/
-├── plugin.json                 # this file (manifest)
-├── agents/                     # symlinks to ../../agents/*.md
+.agents/
+├── agents/                     # symlinks a ../agents/*.md
 │   ├── data-explorer.md
+│   ├── ml-modeler.md
 │   ├── reporting-analyst.md
 │   ├── sql-analyst.md
 │   └── using-data-analytics-agents.md
-└── skills/                     # symlinks to ../../skills/*/
+└── skills/                     # symlinks a ../skills/*/
     ├── csv-profiler/SKILL.md
     ├── pandas-cleaning/SKILL.md
-    ├── sql-query-helper/SKILL.md
-    ├── using-data-analytics-agents/SKILL.md
-    └── viz-patterns/SKILL.md
+    └── ... (20 skills)
 ```
 
-## After `make install`
+## Estructura legacy de plugin (`~/.gemini/antigravity-cli/plugins/data-analytics-agents/`)
 
-Verify with:
+Este adaptador provee el manifiesto `plugin.json` que `scripts/install.sh` usaba para empaquetar el toolkit como plugin formal:
+
+```
+~/.gemini/antigravity-cli/plugins/data-analytics-agents/
+├── plugin.json                 # este archivo (manifiesto)
+├── agents/                     # symlinks a ../../agents/*.md
+│   ├── data-explorer.md
+│   ├── ml-modeler.md
+│   ├── reporting-analyst.md
+│   ├── sql-analyst.md
+│   └── using-data-analytics-agents.md
+└── skills/                     # symlinks a ../../skills/*/
+    └── ...
+```
+
+## Verificación
 
 ```bash
-agy plugin list                                    # should show data-analytics-agents
-agy agent                                          # should list data-explorer, etc.
-ls ~/.gemini/antigravity-cli/plugins/data-analytics-agents/
-ls ~/.gemini/antigravity-cli/plugins/data-analytics-agents/skills/
+agy agent                                          # debe listar data-explorer, ml-modeler, etc.
 ```
 
-## Invoking the agents
+## Invocación de los agentes
 
 ```bash
-# Via --agent flag (per-session override)
-agy --model gemini-3.6-flash --agent data-explorer \
-  "analyze ./examples/ventas_sample.csv"
+# Vía flag --agent
+agy -m gemini-3.6-flash --agent data-explorer "analiza ./examples/ventas_sample.csv"
+agy --agent sql-analyst "top 5 clientes por revenue"
+agy --agent reporting-analyst "tendencia mensual de revenue a ./reports/"
+agy --agent ml-modeler "entrenar modelo de churn"
 
-agy --agent sql-analyst \
-  "top 5 customers by revenue last quarter"
-
-agy --agent reporting-analyst \
-  "monthly revenue trend, last 90 days, output to ./reports/"
+# O vía prompt en cualquier sesión activa
+agy "act as data-explorer. Profileá examples/ventas_sample.csv"
 ```
 
-## How Antigravity differs from OpenCode / Claude Code
-
-| Aspect | Antigravity CLI | OpenCode / Claude Code |
-|---|---|---|
-| Custom agents | via Plugins (`~/.gemini/antigravity-cli/plugins/<name>/agents/`) | via dedicated paths in config |
-| Custom skills | per-plugin OR global `~/.gemini/antigravity-cli/skills/` OR project `.agents/skills/` | dedicated paths |
-| Discovery mechanism | `agy plugin list` and `agy agent` | `--agent <name>` flag at invocation |
-| Cloud-sourced agents | also available (managed by Google) | none |
-| Schema validation | JSON Schema: `https://antigravity.google/schemas/v1/plugin.json` | YAML frontmatter (informal) |
-
-## Re-installing
+## Instalación y desinstalación
 
 ```bash
-make install        # idempotent — re-runs all steps including Agy
-make refresh        # same
-make uninstall      # removes all artefacts, including the Antigravity plugin
+make install-agy        # project-local: .agents/agents/ + .agents/skills/
+make install-all        # los 5 CLIs project-local
+make uninstall-agy      # elimina symlinks de Agy
+make uninstall-all      # limpia todo
 ```
-
-## Caveats
-
-- Antigravity CLI v1.1.8 (current at time of writing). Some features
-  documented at `https://antigravity.google/docs/cli/plugins/` may evolve.
-- Plugin name must match `^[a-zA-Z0-9-_]+$` — we use `data-analytics-agents`.
-- The plugin is staged at the **user** level. Antigravity will discover it
-  the next time you invoke `agy` (may require a fresh session).

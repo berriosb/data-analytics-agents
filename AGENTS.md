@@ -1,12 +1,12 @@
 # Data Analytics Agents
 
-El punto de entrada unificado para OpenCode, Claude Code, Codex y Antigravity
-CLI (Agy). Este archivo se auto-descubre en la raíz del proyecto, así que
+El punto de entrada unificado para OpenCode, Claude Code, Codex, Antigravity
+CLI (Agy), Pi Coding Agent (pi) y MiniMax Code (mcode). Este archivo se auto-descubre en la raíz del proyecto, así que
 cualquier CLI que se lance desde este directorio toma las personas de abajo
 como contexto.
 
 > **Inicio rápido** — para registrar las 5 personas como agentes reales en
-> OpenCode (y como agentes/skills project-local en Claude Code, Codex y Agy),
+> OpenCode (y como agentes/skills project-local en Claude Code, Codex, Agy, Pi y mcode),
 > corré estos dos pasos desde el directorio del proyecto de data analytics
 > destino:
 >
@@ -14,7 +14,7 @@ como contexto.
 > # 1. Instalá el toolkit como dev dependency (deja el paquete en node_modules/):
 > npm install --save-dev data-analytics-agents
 >
-> # 2. Corré el instalador (registra agents + skills en los 4 CLIs):
+> # 2. Corré el instalador (registra agents + skills en los 5 CLIs):
 > npx data-analytics-agents install --all
 > ```
 >
@@ -40,7 +40,9 @@ como contexto.
 > | OpenCode | `.opencode/agents/<name>.md` + `.opencode/skills/<name>` |
 > | Claude Code | `.claude/agents/<name>.md` + `.claude/skills/<name>` |
 > | Codex | `.agents/skills/<name>` (Codex lee los agentes desde AGENTS.md) |
-> | Antigravity | plugin staged en `~/.gemini/antigravity-cli/plugins/` |
+> | Antigravity | `.agents/agents/<name>.md` + `.agents/skills/<name>` (o global en `~/.gemini/config/`) |
+> | Pi | `.pi/agents/<name>.md` + `.pi/skills/<name>` (y auto-descubre `.agents/skills/`) |
+> | MiniMax Code | `.agents/skills/<name>` (mcode lee los agentes desde AGENTS.md) |
 
 ## Mapa de la arquitectura
 
@@ -252,11 +254,34 @@ claude -m opus --agent reporting-analyst "Tendencia mensual de revenue, salida a
 
 ```bash
 cd ~/Proyectos/data-analytics
-make install-all   # instala el plugin de agy globalmente (el único CLI que requiere --global)
+make install-all   # registra personas y skills para los 5 CLIs (incluyendo Antigravity y Pi)
 
 agy -m gemini-3.6-flash --agent data-explorer "Profileá examples/ventas_sample.csv y pará."
 agy -m "Claude Opus 4.6 (Thinking)" --agent sql-analyst "Top 5 de clientes por revenue."
 agy -m gemini-3.6-flash --agent reporting-analyst "Tendencia mensual de revenue, salida a ./reports/."
+```
+
+### Pi Coding Agent (`pi`)
+
+```bash
+cd ~/Proyectos/data-analytics
+make install-all   # registra personas y skills para los 5 CLIs (incluyendo Pi)
+
+pi "act as data-explorer. Profileá examples/ventas_sample.csv y pará."
+pi "act as sql-analyst. En examples/notes_example.sqlite, dame el top 5 de clientes por revenue."
+pi "act as reporting-analyst. Tendencia mensual de revenue, salida a ./reports/."
+```
+
+### MiniMax Code (`mcode`)
+
+```bash
+cd ~/Proyectos/data-analytics
+make install-all   # skills disponibles en .agents/skills/
+
+# En TUI o headless vía exec:
+mcode "act as data-explorer. Profileá examples/ventas_sample.csv y pará."
+mcode "act as sql-analyst. En examples/notes_example.sqlite, dame el top 5 de clientes por revenue."
+mcode "act as reporting-analyst. Tendencia mensual de revenue, salida a ./reports/."
 ```
 
 ## Por qué "act as" funciona en cada CLI
@@ -270,35 +295,44 @@ verdad para ese rol; si algún agente se siente poco instruido, pedile al
 CLI que `@agents/data-explorer.md` (o directamente que lea el archivo con
 sus tools).
 
-## Instalación opcional (solo si tus skills no están ya en `~/.agents/skills/`)
+## Instalación: Project-local vs Global
 
-Si `~/.agents/skills/` todavía no contiene `csv-profiler`, `pandas-cleaning`,
-`sql-query-helper`, `schema-mapper`, `query-validation`, `viz-patterns`,
-`insight-synthesis`, y `using-data-analytics-agents`, corré:
-
+Por defecto, **la instalación es 100% project-local**:
 ```bash
-make install-skills   # symlinks skills/<name>/ -> ~/.agents/skills/<name>
+make install-all   # o: npx data-analytics-agents install --all
+```
+Esto crea los symlinks exclusivamente dentro de la raíz del proyecto destino
+(`.opencode/`, `.claude/`, `.agents/`, `.pi/`). Tus otros proyectos (desarrollo web,
+APIs, scripts de sistema) **no ven ni cargan** agentes ni skills de data analytics.
+
+Solo si explícitamente quisieras tener las skills de data analytics disponibles
+en todos tus proyectos a nivel de usuario, podés instalar a nivel global:
+```bash
+make install-skills   # global: symlinks a ~/.agents/skills/
 ```
 
-Este es el **único** paso de instalación requerido, y funciona igual para
-los cuatro CLIs (comparten `~/.agents/skills/`). Alternativamente, corré
-`make install-codex` (o `--all`) para instalar skills compatibles con
-Codex en el `.agents/skills/` project-local.
+## Soporte de Antigravity (Agy)
 
-## Plugin opcional de Antigravity (Agy)
+Antigravity auto-descubre las skills en `.agents/skills/` y los agentes en
+`.agents/agents/*.md` a nivel project-local (o en `~/.gemini/config/agents/` si
+se instala con `--global`). `bin/install.js install --agy` (o `make install-agy` / `make install-all`)
+crea los symlinks en `.agents/agents/` y `.agents/skills/`.
 
-Si además querés las personas de data-analytics disponibles vía
-`agy --agent <name>` (en vez del estilo "act as" de arriba), instalá el
-manifest del plugin incluido:
+Después de esto:
 
-```bash
-make install-agy      # stagea plugins/data-analytics-agents en ~/.gemini/antigravity-cli/plugins/
-```
+- `agy agent` lista las 5 personas disponibles.
+- `agy --agent <name>` permite correr sesiones directamente con cualquier persona.
+- Ambos estilos ("act as" en el prompt y `--agent <name>`) funcionan en simultáneo.
 
-Después de esto, `agy plugin list` debería mostrar `data-analytics-agents` y
-`agy agent` debería listar las cuatro personas. **Ambos estilos funcionan en
-simultáneo** — elegí el que prefieras por sesión. `make install-all`
-incluye este paso.
+## Soporte de Pi (`pi`)
+
+Pi auto-descubre `AGENTS.md` en la raíz del proyecto para contexto de personas y
+las 20 skills en `.agents/skills/` o `~/.agents/skills/` (conforme a la especificación
+Agent Skills).
+
+Para entornos con la extensión de subagentes (`gentle-pi`), `bin/install.js install --pi`
+(o `make install-pi` / `make install-all`) genera además los symlinks en
+`.pi/agents/*.md` y `.pi/skills/`.
 
 ## Qué hace `bin/install.js`
 
@@ -311,8 +345,9 @@ verdad.
 node ./bin/install.js install --opencode   # → .opencode/agents/ + .opencode/skills/
 node ./bin/install.js install --claude     # → .claude/agents/ + .claude/skills/
 node ./bin/install.js install --codex      # → .agents/skills/
-node ./bin/install.js install --agy        # → ~/.gemini/antigravity-cli/plugins/...
-node ./bin/install.js install --all        # los 4 CLIs a la vez
+node ./bin/install.js install --agy        # → .agents/agents/ + .agents/skills/
+node ./bin/install.js install --pi         # → .pi/agents/ + .pi/skills/
+node ./bin/install.js install --all        # los 5 CLIs a la vez
 node ./bin/install.js install --auto       # solo para CLIs cuyo binario esté en PATH
 node ./bin/install.js list                 # muestra el estado actual
 node ./bin/install.js uninstall --all     # elimina todo lo que enlazamos

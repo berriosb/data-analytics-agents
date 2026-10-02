@@ -14,9 +14,13 @@ Ejecuta las recetas de skills/excel-profiler/SKILL.md y verifica:
 """
 import sys
 from pathlib import Path
-import openpyxl
-import pandas as pd
-import numpy as np
+try:
+    import openpyxl
+    import pandas as pd
+    import numpy as np
+except ImportError as e:
+    print(f"  SKIPPED: {e.name} no instalada (pip install openpyxl pandas numpy)")
+    sys.exit(0)
 
 EXAMPLE_DIR = Path(__file__).parent
 SAMPLE = EXAMPLE_DIR / "ventas_q2_2026_dirty.xlsx"

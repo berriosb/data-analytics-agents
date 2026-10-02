@@ -2,12 +2,12 @@
 // bin/install.js — instalador multi-CLI para data-analytics-agents.
 //
 // Instala agentes (personas) y skills (recetas) en los directorios
-// project-local o user-level esperados por OpenCode, Claude Code, Codex y
-// Antigravity (agy). Siempre usa symlinks así que `agents/*.md` y `skills/*/`
+// project-local o user-level esperados por OpenCode, Claude Code, Codex,
+// Antigravity (agy) y Pi. Siempre usa symlinks así que `agents/*.md` y `skills/*/`
 // siguen siendo la única fuente de verdad.
 //
 // Uso:
-//   node ./bin/install.js install [--opencode] [--claude] [--codex] [--agy]
+//   node ./bin/install.js install [--opencode] [--claude] [--codex] [--agy] [--pi]
 //                                [--all] [--auto] [--global]
 //   node ./bin/install.js uninstall [...]
 //   node ./bin/install.js list
@@ -15,7 +15,7 @@
 //
 // Sin dependencias externas. Node >= 18.
 
-import { existsSync, lstatSync, readlinkSync, symlinkSync, unlinkSync, mkdirSync, readdirSync, rmSync, statSync } from "node:fs";
+import { existsSync, lstatSync, readlinkSync, symlinkSync, unlinkSync, mkdirSync, readdirSync, rmSync, statSync, readFileSync } from "node:fs";
 import { dirname, join, relative, resolve, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
@@ -24,6 +24,12 @@ import { homedir } from "node:os";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "..");
+
+let VERSION = "1.2.1";
+try {
+  const pkg = JSON.parse(readFileSync(join(REPO_ROOT, "package.json"), "utf8"));
+  if (pkg.version) VERSION = pkg.version;
+} catch {}
 
 const AGENTS_DIR = join(REPO_ROOT, "agents");
 const SKILLS_DIR = join(REPO_ROOT, "skills");
@@ -122,34 +128,58 @@ function pathsForCli(cli, scope) {
       return skills;
     },
     agy: () => {
-      // Antigravity CLI usa un layout de directorio plugin bajo ~/.gemini/.
-      // Siempre global — no hay modelo de plugin project-local.
-      if (scope !== "global") return [];
-      const pluginRoot = join(home, ".gemini", "antigravity-cli", "plugins", "data-analytics-agents");
-      const out = [];
-      out.push({
-        kind: "plugin-manifest",
-        name: "data-analytics-agents",
-        src: join(ADAPTERS_DIR, "antigravity", "plugin.json"),
-        dst: join(pluginRoot, "plugin.json"),
-      });
-      for (const name of AGENT_NAMES) {
-        out.push({
-          kind: "agent",
-          name,
-          src: agentSrc(name),
-          dst: join(pluginRoot, "agents", `${name}.md`),
-        });
-      }
-      for (const name of SKILL_NAMES) {
-        out.push({
-          kind: "skill",
-          name,
-          src: skillSrc(name),
-          dst: join(pluginRoot, "skills", name),
-        });
-      }
-      return out;
+      // Antigravity CLI descubre:
+      // - project-local: .agents/agents/*.md + .agents/skills/*/
+      // - global: ~/.gemini/config/agents/*.md + ~/.agents/skills/*/
+      const agentDst = (name) =>
+        scope === "global"
+          ? join(home, ".gemini", "config", "agents", `${name}.md`)
+          : join(projRoot, ".agents", "agents", `${name}.md`);
+      const skillDst = (name) =>
+        scope === "global"
+          ? join(home, ".agents", "skills", name)
+          : join(projRoot, ".agents", "skills", name);
+
+      const agents = AGENT_NAMES.map((name) => ({
+        kind: "agent",
+        name,
+        src: agentSrc(name),
+        dst: agentDst(name),
+      }));
+      const skills = SKILL_NAMES.map((name) => ({
+        kind: "skill",
+        name,
+        src: skillSrc(name),
+        dst: skillDst(name),
+      }));
+      return [...agents, ...skills];
+    },
+    pi: () => {
+      // Pi (Pi Coding Agent / Gentle-Pi) descubre:
+      // - project-local: .pi/agents/*.md + .pi/skills/*/ (y también auto-descubre .agents/skills/*/)
+      // - global: ~/.pi/agent/agents/*.md + ~/.pi/agent/skills/*/ (y ~/.agents/skills/*/)
+      const agentDst = (name) =>
+        scope === "global"
+          ? join(home, ".pi", "agent", "agents", `${name}.md`)
+          : join(projRoot, ".pi", "agents", `${name}.md`);
+      const skillDst = (name) =>
+        scope === "global"
+          ? join(home, ".pi", "agent", "skills", name)
+          : join(projRoot, ".pi", "skills", name);
+
+      const agents = AGENT_NAMES.map((name) => ({
+        kind: "agent",
+        name,
+        src: agentSrc(name),
+        dst: agentDst(name),
+      }));
+      const skills = SKILL_NAMES.map((name) => ({
+        kind: "skill",
+        name,
+        src: skillSrc(name),
+        dst: skillDst(name),
+      }));
+      return [...agents, ...skills];
     },
   };
 
@@ -222,6 +252,7 @@ function detectClis() {
     claude: ["claude"],
     codex: ["codex"],
     agy: ["agy"],
+    pi: ["pi"],
   };
   const present = new Set();
   for (const [cli, bins] of Object.entries(checks)) {
@@ -294,7 +325,7 @@ function uninstall(scope, clis) {
 }
 
 function list(scope) {
-  const clis = ["opencode", "claude", "codex", "agy"];
+  const clis = ["opencode", "claude", "codex", "agy", "pi"];
   for (const cli of clis) {
     const items = pathsForCli(cli, scope);
     if (items.length === 0) continue;
@@ -326,14 +357,15 @@ ${c("bold", "Uso:")}
 
 ${c("bold", "Alcance:")}
   (por defecto)            project-local (./.opencode/, ./.claude/, etc.)
-  --global, -g             user-level (~/.config/opencode/, ~/.claude/, ~/.agents/, ~/.gemini/)
+  --global, -g             user-level (~/.config/opencode/, ~/.claude/, ~/.agents/, ~/.gemini/, ~/.pi/)
 
 ${c("bold", "Targets (combinables; default = --all):")}
   --opencode, -o           OpenCode (agents + skills)
   --claude, -c             Claude Code (agents + skills)
   --codex, -x              Codex (skills; los agentes van vía AGENTS.md)
-  --agy, -a                Antigravity CLI (plugin; solo global)
-  --all                    los 4 CLIs a la vez
+  --agy, -a                Antigravity CLI (agents + skills)
+  --pi, -p                 Pi Coding Agent (agents + skills)
+  --all                    los 5 CLIs a la vez
 
 ${c("bold", "Otros flags:")}
   --auto                   instalar solo para los CLIs cuyo binario esté en PATH
@@ -341,7 +373,7 @@ ${c("bold", "Otros flags:")}
 
 ${c("bold", "Ejemplos:")}
   data-analytics-agents install --opencode           # arregla el problema de agentes en OpenCode
-  data-analytics-agents install --all                # project-local para los 4 CLIs
+  data-analytics-agents install --all                # project-local para los 5 CLIs
   data-analytics-agents install --auto --global      # user-level, CLIs auto-detectados
   data-analytics-agents uninstall --all              # elimina todo lo que enlazamos
   data-analytics-agents list                         # muestra el estado actual
@@ -365,8 +397,9 @@ function selectedClis(flags) {
   if (flags.has("--claude") || flags.has("-c")) requested.push("claude");
   if (flags.has("--codex") || flags.has("-x")) requested.push("codex");
   if (flags.has("--agy") || flags.has("-a")) requested.push("agy");
-  if (flags.has("--all")) requested.push("opencode", "claude", "codex", "agy");
-  return requested.length ? [...new Set(requested)] : ["opencode", "claude", "codex", "agy"];
+  if (flags.has("--pi") || flags.has("-p")) requested.push("pi");
+  if (flags.has("--all")) requested.push("opencode", "claude", "codex", "agy", "pi");
+  return requested.length ? [...new Set(requested)] : ["opencode", "claude", "codex", "agy", "pi"];
 }
 
 function preflight() {
@@ -418,20 +451,13 @@ function main() {
     const present = detectClis();
     clis = clis.filter((c) => present.has(c));
     if (clis.length === 0) {
-      warn("--auto: no se encontró ninguno de opencode / claude / codex / agy en PATH; nada para hacer");
+      warn("--auto: no se encontró ninguno de opencode / claude / codex / agy / pi en PATH; nada para hacer");
       return 0;
     }
     info(`--auto detectó: ${clis.join(", ")}`);
   }
 
-  // Agy es solo global; avisamos al usuario cuando lo pide project-local.
-  if (clis.includes("agy") && scope !== "global") {
-    warn("--agy solo soporta --global (Antigravity no tiene modelo de plugin project-local); se saltea agy");
-    clis = clis.filter((c) => c !== "agy");
-    if (clis.length === 0) return 0;
-  }
-
-  log(`${c("bold", "data-analytics-agents")} ${c("dim", `v0.1.0 — ${cmd} (${scope}${dryRun ? ", dry-run" : ""})`)}`);
+  log(`${c("bold", "data-analytics-agents")} ${c("dim", `v${VERSION} — ${cmd} (${scope}${dryRun ? ", dry-run" : ""})`)}`);
 
   if (dryRun) {
     for (const cli of clis) {

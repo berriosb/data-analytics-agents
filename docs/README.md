@@ -40,14 +40,21 @@ Documentación de diseño del toolkit `data-analytics-agents`.
 - [001-portable-day1](adr/001-portable-day1.md) — Extender el toolkit
   para uso profesional día 1: excel-profiler + sql-cloud-warehouse +
   report-export. Aceptado 2026-09-14.
+- [002-end-to-end-delivery](adr/002-end-to-end-delivery.md) — Extender el
+  toolkit para entrega end-to-end (análisis → servicio): api-builder +
+  excel-formulas + sql-write + audit-log. Aceptado 2026-09-14.
+- [003-oauth2-cloud-warehouses](adr/003-oauth2-cloud-warehouses.md) — Soporte
+  OAuth2 / service-principal para cloud warehouses. Draft 2026-09-15.
 
 ### PRDs
 
+- [api-builder](prd/api-builder.md) — Generación de API REST (FastAPI).
+- [audit-log](prd/audit-log.md) — Log transversal de operaciones a DB y PII redaction.
+- [excel-formulas](prd/excel-formulas.md) — Auditoría de fórmulas en Excel.
 - [excel-profiler](prd/excel-profiler.md) — Perfilado de Excel sucio.
-- [sql-cloud-warehouse](prd/sql-cloud-warehouse.md) — Soporte para
-  Snowflake, BigQuery, Redshift.
-- [report-export](prd/report-export.md) — Export de reportes a PDF,
-  PPT y HTML standalone.
+- [report-export](prd/report-export.md) — Export de reportes a PDF, PPT y HTML standalone.
+- [sql-cloud-warehouse](prd/sql-cloud-warehouse.md) — Soporte para Snowflake, BigQuery, Redshift, Databricks.
+- [sql-write](prd/sql-write.md) — Persistencia segura de resultados SQL (modo conservador).
 
 ### Notes
 

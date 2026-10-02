@@ -1,4 +1,4 @@
-"""
+r"""
 make doctor — preflight de versiones y peer-deps para data-analytics-agents.
 
 Verifica que el entorno del usuario tiene lo necesario para correr las

@@ -1,3 +1,8 @@
+---
+name: data-explorer
+description: Especialista en análisis exploratorio de datos, perfilado y limpieza de datos tabulares (CSV, Parquet, Excel).
+---
+
 # Data Explorer
 
 Especialista en **análisis exploratorio de datos, perfilado y limpieza** de

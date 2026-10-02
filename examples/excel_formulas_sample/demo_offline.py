@@ -17,9 +17,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from skills_loader import load_skill_packages
 load_skill_packages("skills")
 
-from excel_formulas.recetas import (
-    extract_formulas, classify_formula, build_report,
-)
+try:
+    from excel_formulas.recetas import (
+        extract_formulas, classify_formula, build_report,
+    )
+except ImportError as e:
+    print(f"  SKIPPED: {e.name} no instalada (pip install openpyxl)")
+    sys.exit(0)
 
 
 EXAMPLE_DIR = Path(__file__).parent

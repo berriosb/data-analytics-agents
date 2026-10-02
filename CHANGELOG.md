@@ -5,6 +5,27 @@ inspirado en [Keep a Changelog](https://keepachangelog.com/) y el versionado
 sigue [SemVer](https://semver.org/). La fuente de verdad para el alcance de
 cada release es `package.json` + los PRDs en [`docs/prd/`](docs/).
 
+## [1.3.0] — 2026-10-02
+
+### Added
+
+- **Pi Coding Agent (`pi`) support** — Added `--pi` target to `bin/install.js`, `make install-pi`, and `make uninstall-pi`. Enlaces a `.pi/agents/*.md` y `.pi/skills/*/`.
+- **MiniMax Code (`mcode`) support** — Soporte y documentación formal de auto-descubrimiento vía `AGENTS.md` y `.agents/skills/`.
+- **YAML Frontmatter en los 5 agentes** — Metadatos estándar (`name` y `description`) en `agents/*.md` requeridos por Antigravity CLI (`agy`).
+- **Antigravity CLI project-local** — Enlaces a `.agents/agents/*.md` y `.agents/skills/*/` y actualización del adapter.
+- **Script `install:all` en `package.json`** — Atajo para `node ./bin/install.js install --all`.
+
+### Fixed
+
+- **Versión dinámica en `bin/install.js`** — Carga la versión real desde `package.json` en vez de imprimir `v0.1.0`.
+- **Python 3.12+ `SyntaxWarning` en `scripts/doctor.py`** — Docstring convertido a raw string `r"""`.
+- **`ml-modeler` faltante en `scripts/install.sh`** — Agregado al bucle de limpieza legacy.
+- **Inconsistencias en `Makefile`** — Actualizado `.PHONY`, conteo de 20 skills, inspección de `.pi/` en `make list`.
+- **Higiene en `.npmignore`** — Exclusión de `.pi/`, `.atl/` y `.engram/` del tarball npm.
+- **CI Smoke Test Workflow** — Verificación de enlaces para Antigravity y Pi.
+- **Manejo limpio de dependencias opcionales** — Mensajes `SKIPPED:` en scripts offline al faltar `openpyxl`, `pandas` o `sqlalchemy`.
+- **Índice de documentación** — Indexados ADRs 002 y 003 y todos los PRDs en `docs/README.md`.
+
 ## [1.2.1] — 2026-09-24
 
 ### Fixed
