@@ -189,7 +189,13 @@ test: test-csv test-sql test-stats test-ts test-ml test-excel test-excel-formula
 
 test-unit:
 	@echo "Unit tests sobre snippets de skills (pytest tests/)"
-	@python3 -m pytest tests/ -v
+	@if command -v pytest >/dev/null 2>&1; then \
+		pytest tests/ -v; \
+	elif python3 -m pytest --version >/dev/null 2>&1; then \
+		python3 -m pytest tests/ -v; \
+	else \
+		echo "  SKIPPED: pytest no instalado en este entorno (pip install -e .[dev])"; \
+	fi
 
 doctor:
 	@echo "Preflight: chequea Node, Python y peer-deps para data-analytics-agents"
